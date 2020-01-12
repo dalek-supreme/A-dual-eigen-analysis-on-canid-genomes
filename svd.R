@@ -2,7 +2,7 @@
 library(gdsfmt)
 library(SNPRelate)
 
-#vcf.fn <- "/Users/leo/genome-data/simp_2012.5.18_6canid_merged_chr01_cf31.vcf"
+#vcf.fn <- "~/genome-data/simp_2012.5.18_6canid_merged_chr01_cf31.vcf"
 #Reformat vcf to gds, use bialletic only for this try
 #Actually there are some non-bi-allelic sites, deal with this later.
 #snpgdsVCF2GDS(vcf.fn, "test.gds", method="biallelic.only")
@@ -11,7 +11,7 @@ library(SNPRelate)
 #snpgdsSummary("test.gds")
 #Open gds file and check some parameters
 
-genofile <- snpgdsOpen("/Users/leo/test.gds")
+genofile <- snpgdsOpen("~/test.gds")
 
 #get.attr.gdsn(index.gdsn(genofile,"snp.chromosome"))
 #Get genotypical matrix
