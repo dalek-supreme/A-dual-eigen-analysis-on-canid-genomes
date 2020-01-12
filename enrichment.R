@@ -96,7 +96,7 @@ for(layer in 8:10){
 	demog_sorted<-array(-1,dim=c(127,9))
 	u_order_layer<-order(s$u[,layer])
 	# read demographic info to generate a report
-	demog<-as.matrix(read.csv('/Users/leo/genome-data/demographic.csv',header=TRUE))
+	demog<-as.matrix(read.csv('~/genome-data/demographic.csv',header=TRUE))
 	for (i in 1:length(samples)){
 		demog_sorted[i,1]<-demog[which(demog[,2]==samples[u_order_layer[i]]),1]
 		demog_sorted[i,2]<-demog[which(demog[,2]==samples[u_order_layer[i]]),2]
@@ -120,7 +120,7 @@ for(layer in 8:10){
 		output_enrichment[j+pval_range+1+pval_range+1+pval_range+1,4]<-demog_sorted[128-j,4]
 	}
 	
-	write.csv(as.data.frame(output_enrichment),file=paste('/Users/leo/Documents/毕设/output_10/',layer,'_layer_comparison_chrome_',chrome[sizes[chr_t]],'.csv',sep=''))
+	write.csv(as.data.frame(output_enrichment),file=paste('~/Documents/毕设/output_10/',layer,'_layer_comparison_chrome_',chrome[sizes[chr_t]],'.csv',sep=''))
 	
 }
 
