@@ -94,7 +94,9 @@ for(layer in 8:10){
 
 	}
 	demog_sorted<-array(-1,dim=c(127,9))
-	u_order_layer<-order(s$u[,layer])
+	# ERRETA: before, we mistakened the left eigenvector to be row vectors, but actually they should be column vectors!!!
+	#u_order_layer<-order(s$u[,layer])
+	u_order_layer<-order(s$u[layer,])
 	# read demographic info to generate a report
 	demog<-as.matrix(read.csv('/Users/leo/genome-data/demographic.csv',header=TRUE))
 	for (i in 1:length(samples)){
