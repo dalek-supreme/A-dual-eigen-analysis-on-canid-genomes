@@ -1,0 +1,11 @@
+pseudo code:
+
+for gene in gene.data$gene
+    for SNPsite in SNP_sites
+        score[gene] = score[gene]+ <loading corresponding to SNPsite>
+        # maybe not just "+"? maybe use log or what?
+
+do wilcox.test for score[gene] w.r.t. each path in GO.path
+obtain pvalues for each path (H_0: not in this path? (eqi-distributed), H_1: in this path)
+sort pvalues[path]
+output
