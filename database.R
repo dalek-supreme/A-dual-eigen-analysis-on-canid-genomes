@@ -11,4 +11,7 @@ gene.data <- getBM(attributes=c("ensembl_gene_id","entrezgene_id","start_positio
 	 		filters='chromosome_name',
 	 		values=chr_t,
 	 		mart=ensembl)
+
+#setwd("") # set to the correct working dir
+save(gene.data,file="gene.data.Rdata")
 # for chromosome=chr_t
