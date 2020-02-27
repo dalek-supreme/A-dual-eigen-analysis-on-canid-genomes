@@ -65,6 +65,7 @@ enrichment.blahblah <- function()
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 # does wilcoxon rank sum test on given subset w/ loadings
 enrichment.wilcoxon <- function(gene.subset,gene.data){
     enrichment.result <- data.frame(
@@ -109,12 +110,15 @@ enrichment.wilcoxon <- function(gene.subset,gene.data){
 }
 =======
 >>>>>>> parent of c5e34e9... Update utils.R
+=======
+>>>>>>> parent of c5e34e9... Update utils.R
 
 pathway.id <- unique(GO.data[,2])
 
 
 enrichment.wilcoxon <- function(experiment.data, pathway.data) {
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 # sort the enrichment result by p-value,
 # then output the terms with the <num_terms> smallest p-values
@@ -142,10 +146,16 @@ enrichment.output <- function(enrichment.result, gene.data, num_terms, filename)
     return(output.data)
 }
 =======
+=======
+>>>>>>> parent of c5e34e9... Update utils.R
     pathway.pval <- sapply(pathway.id, function(x){
         
     })
     # result<-data.frame(...)
     # return(result)
+<<<<<<< HEAD
+}
+>>>>>>> parent of c5e34e9... Update utils.R
+=======
 }
 >>>>>>> parent of c5e34e9... Update utils.R
