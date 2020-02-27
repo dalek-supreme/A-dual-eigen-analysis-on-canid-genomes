@@ -7,7 +7,7 @@ prj <- function(vec_from,vec_to) {
 
 
 # count the SNP sites per gene
-gene.stats <- function(layer,r_mtx_from_svd,gene.data) {
+get.gene.snp.counts_and_sums <- function(layer,r_mtx_from_svd,gene.data) {
     result.data <- data.frame(
         ensembl_gene_id = unique(gene.data$ensembl_gene_id),
         count = array(0,length(unique(gene.data$ensembl_gene_id))),
@@ -39,6 +39,7 @@ gene.stats <- function(layer,r_mtx_from_svd,gene.data) {
             pos[coordinates[site_num]] <=
             unique(gene.data[gene.data$ensembl_gene_id==gene,]$end_position)
             ){
+                #print(paste("in gene:",gene,"rank =",rank(r_mtx_from_svd[,layer])[site_num],sep=" "))
                 #print(paste("found in gene: ",gene," at site: ",site_num,". ", site_num/dim(r_mtx_from_svd)[1]*100,"% completed.",sep=""))
                 snp.loading.count <- snp.loading.count + 1
                 snp.loading.sum <- snp.loading.sum + r_mtx_from_svd[site_num,layer]
@@ -59,13 +60,40 @@ gene.stats <- function(layer,r_mtx_from_svd,gene.data) {
     return(result.data)
 }
 
-enrichment.wilcoxon <- function()
-enrichment.chi_square <- function()
-enrichment.blahblah <- function()
+# take intersection with the genes with variations,
+# as required by the wilcoxon enrichment analysis
+get.gene.data.remove0s <- function(gene.stats,gene.data){
+    zeros.index <-
+        gene.data$ensembl_gene_id %in% 
+            gene.stats[gene.stats$count==0,]$ensembl_gene_id
+    return(gene.data[!zeros.index,])
+}
 
+#gene.stats[(gene.stats$ensembl_gene_id %in% unique(get.gene.data.remove0s(gene.stats,gene.data)$ensembl_gene_id)),]$count
+#gene.stats[!(gene.stats$ensembl_gene_id %in% unique(get.gene.data.remove0s(gene.stats,gene.data)$ensembl_gene_id)),]$count
 
-<<<<<<< HEAD
-<<<<<<< HEAD
+# removes zeros. takes average of loadings. and sorts.
+get.gene.stats.sorted <- function(gene.stats){
+    result.data <- data.frame(
+        ensembl_gene_id=array("",length(gene.stats[gene.stats$count!=0,]$ensembl_gene_id)),
+        avg_loading=array(0,length(gene.stats[gene.stats$count!=0,]$ensembl_gene_id)),
+        stringsAsFactors = F
+    )
+    avg <- gene.stats[gene.stats$count!=0,]$sum/gene.stats[gene.stats$count!=0,]$count
+    result.data$avg_loading <- sort(avg)
+    result.data$ensembl_gene_id <- 
+        gene.stats[gene.stats$count!=0,]$ensembl_gene_id[order(avg)]
+    return(result.data)
+}
+
+# get subset for analysis with index from index.start to index.end
+get.gene.subset <- function(gene.stats.sorted, index.start, index.end){
+    return(gene.stats.sorted[index.start:index.end,])
+}
+
+#test:
+#gene.subset<-get.gene.subset(get.gene.stats.sorted(gene.stats),1,100)
+
 # does wilcoxon rank sum test on given subset w/ loadings
 enrichment.wilcoxon <- function(gene.subset,gene.data){
     enrichment.result <- data.frame(
@@ -80,7 +108,6 @@ enrichment.wilcoxon <- function(gene.subset,gene.data){
         index <- gene.subset$ensembl_gene_id %in% pathway.genes
         loadings.in_pathway <- gene.subset[index,]$avg_loading
         loadings.out_of_pathway <- gene.subset[!index,]$avg_loading
-        print(paste("GO term:",x,sep=""))
         if (length(pathway.genes) >= 6 # Question: why is this 6 and is this necessary and does it vary by different tests?
             && length(loadings.in_pathway)>0
             && length(loadings.out_of_pathway)>0
@@ -88,41 +115,39 @@ enrichment.wilcoxon <- function(gene.subset,gene.data){
             if(NA %in% c(loadings.in_pathway,loadings.out_of_pathway)){
                 print("NA!!!!")
             }
-            print(paste("GO term:",x," beginning wilcox.test",sep=""))
-            print(index)
-            print(loadings.in_pathway)
-            print(loadings.out_of_pathway)
-            print(wilcox.test(
-                as.numeric(loadings.in_pathway), 
-                as.numeric(loadings.out_of_pathway), 
-                alternative = "greater"
-            )$p.val)
             wilcox.test(
                 as.numeric(loadings.in_pathway), 
                 as.numeric(loadings.out_of_pathway), 
                 alternative = "greater"
                 )$p.val
+        } else {
+            10 # set as 10>1 so as to be omitted after sorting 
         }
     })
     enrichment.result$go_id <- pathway.ids
     enrichment.result$p_value <- pathway.pval
     return(enrichment.result)
 }
-=======
->>>>>>> parent of c5e34e9... Update utils.R
-=======
->>>>>>> parent of c5e34e9... Update utils.R
 
-pathway.id <- unique(GO.data[,2])
+enrichment.chi_square <- function()
+enrichment.blahblah <- function()
 
+# a generic function for enrichment
+# does <enrichment.test> on given subset w/ loadings
+# where <enrichment.test> is any statistical two-sample test,
+# such as <wilcox.test> and the chi-square test, etc.
+enrichment <- function(gene.subset,gene.data,enrichment.test){
 
-enrichment.wilcoxon <- function(experiment.data, pathway.data) {
+}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 # sort the enrichment result by p-value,
 # then output the terms with the <num_terms> smallest p-values
-enrichment.output <- function(enrichment.result, gene.data, num_terms, filename){
+enrichment.output <- function(enrichment.result, gene.data, num_terms, filename, p_cutoff=0.05){
+    pval <- enrichment.result$p_value
+    num_terms <- min(
+        num_terms,
+        length(which(sort(pval)<=p_cutoff))
+        )
     output.data <- data.frame(
         # information included in output
         p_value=array("",num_terms),
@@ -133,29 +158,15 @@ enrichment.output <- function(enrichment.result, gene.data, num_terms, filename)
         definition_1006=array("",num_terms),
         stringsAsFactors = F
     )
-    pval <- enrichment.result$p_value
     output.data$p_value <- sort(pval)[1:num_terms]
     output.data$go_id <- enrichment.result$go_id[order(pval)[1:num_terms]]
-    for (id in output.data$go_id){
-        output.data$name_1006 <- unique(gene.data[gene.data$go_id==id,]$name_1006)
-        output.data$go_linkage_type <- unique(gene.data[gene.data$go_id==id,]$go_linkage_type)
-        output.data$namespace_1003 <- unique(gene.data[gene.data$go_id==id,]$namespace_1003)
-        output.data$definition_1006 <- unique(gene.data[gene.data$go_id==id,]$definition_1006)
+    for (num_id in 1:num_terms){
+        id<-output.data$go_id[num_id]
+        output.data$name_1006[num_id] <- unique(gene.data[gene.data$go_id==id,]$name_1006)
+        output.data$go_linkage_type[num_id] <- paste(unique(gene.data[gene.data$go_id==id,]$go_linkage_type),collapse = ",")
+        output.data$namespace_1003[num_id] <- unique(gene.data[gene.data$go_id==id,]$namespace_1003)
+        output.data$definition_1006[num_id] <- unique(gene.data[gene.data$go_id==id,]$definition_1006)
     }
     write.csv(output.data,file=filename)
     return(output.data)
 }
-=======
-=======
->>>>>>> parent of c5e34e9... Update utils.R
-    pathway.pval <- sapply(pathway.id, function(x){
-        
-    })
-    # result<-data.frame(...)
-    # return(result)
-<<<<<<< HEAD
-}
->>>>>>> parent of c5e34e9... Update utils.R
-=======
-}
->>>>>>> parent of c5e34e9... Update utils.R
