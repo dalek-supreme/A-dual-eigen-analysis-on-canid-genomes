@@ -17,7 +17,7 @@ for (layer in layers){
     gene.subset <- get.gene.subset(gene.stats.sorted,1,100)
     result <- enrichment.wilcoxon(gene.subset,gene.data)
     filename <- paste("output_wilcox_chr=",chr_t,"_layer=",layer,".csv",sep="")
-    output <- enrichment.output(result, gene.data, num_terms, filename)
+    output <- enrichment.output(result, gene.data, num_terms, filename, p_cutoff=0.05)
 }
 t2<-Sys.time()
 print(paste("Time elapsed: ",t2-t1,sep=""))
