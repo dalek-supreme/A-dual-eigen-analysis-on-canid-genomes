@@ -136,8 +136,35 @@ enrichment.blahblah <- function()
 # does <enrichment.test> on given subset w/ loadings
 # where <enrichment.test> is any statistical two-sample test,
 # such as <wilcox.test> and the chi-square test, etc.
-enrichment <- function(gene.subset,gene.data,enrichment.test){
-
+enrichment <- function(gene.subset,gene.data,stat.test){
+    enrichment.result <- data.frame(
+        go_id = array("",length(unique(gene.data$go_id))),
+        p_value = array("",length(unique(gene.data$go_id))),
+        stringsAsFactors = F
+    )
+    pathway.ids <- unique(gene.data$go_id)
+    pathway.pval <- sapply(pathway.ids, function(x){
+        index <- gene.data$go_id==x
+        pathway.genes <- gene.data[index,]$ensembl_gene_id
+        index <- gene.subset$ensembl_gene_id %in% pathway.genes
+        loadings.in_pathway <- gene.subset[index,]$avg_loading
+        loadings.out_of_pathway <- gene.subset[!index,]$avg_loading
+        if (length(pathway.genes) >= 6 # Question: why is this 6 and is this necessary and does it vary by different tests?
+            && length(loadings.in_pathway)>0
+            && length(loadings.out_of_pathway)>0
+        ){ 
+            stat.test(
+                as.numeric(loadings.in_pathway), 
+                as.numeric(loadings.out_of_pathway), 
+                alternative = "greater"
+                )$p.val
+        } else {
+            10 # set as 10>1 so as to be omitted after sorting 
+        }
+    })
+    enrichment.result$go_id <- pathway.ids
+    enrichment.result$p_value <- pathway.pval
+    return(enrichment.result)
 }
 
 # sort the enrichment result by p-value,
