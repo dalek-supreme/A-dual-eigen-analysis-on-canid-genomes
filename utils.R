@@ -24,6 +24,9 @@ get.gene.snp.counts_and_sums <- function(layer,r_mtx_from_svd,gene.data) {
             unique(gene.data[gene.data$ensembl_gene_id==gene,]$start_position)
             ){
                 site_num <- site_num+1
+                if(site_num>dim(r_mtx_from_svd)[1]){
+                    break
+                }
                 if (
                     pos[coordinates[site_num]] >
                     unique(gene.data[gene.data$ensembl_gene_id==gene,]$end_position)
@@ -41,7 +44,13 @@ get.gene.snp.counts_and_sums <- function(layer,r_mtx_from_svd,gene.data) {
                 snp.loading.count <- snp.loading.count + 1
                 snp.loading.sum <- snp.loading.sum + r_mtx_from_svd[site_num,layer]
                 site_num <- site_num+1
+                if(site_num>dim(r_mtx_from_svd)[1]){
+                    break
+                }
             }
+        if(site_num>dim(r_mtx_from_svd)[1]){
+            break
+        }
         result.data[result.data$ensembl_gene_id==gene,]$count <- snp.loading.count
         result.data[result.data$ensembl_gene_id==gene,]$sum <- snp.loading.sum
     }
@@ -99,10 +108,33 @@ enrichment.wilcoxon <- function(gene.subset,gene.data){
         index <- gene.subset$ensembl_gene_id %in% pathway.genes
         loadings.in_pathway <- gene.subset[index,]$avg_loading
         loadings.out_of_pathway <- gene.subset[!index,]$avg_loading
-        if (length(pathway.genes) >= 6){ # Question: why is this 6 and is this necessary and does it vary by different tests?
-            wilcox.test(loadings.in_pathway, loadings.out_of_pathway, alternative = "greater")$p.val
+        print(paste("GO term:",x,sep=""))
+        if (length(pathway.genes) >= 6 # Question: why is this 6 and is this necessary and does it vary by different tests?
+            && length(loadings.in_pathway)>0
+            && length(loadings.out_of_pathway)>0
+        ){ 
+            if(NA %in% c(loadings.in_pathway,loadings.out_of_pathway)){
+                print("NA!!!!")
+            }
+            print(paste("GO term:",x," beginning wilcox.test",sep=""))
+            print(index)
+            print(loadings.in_pathway)
+            print(loadings.out_of_pathway)
+            print(wilcox.test(
+                as.numeric(loadings.in_pathway), 
+                as.numeric(loadings.out_of_pathway), 
+                alternative = "greater"
+            )$p.val)
+            wilcox.test(
+                as.numeric(loadings.in_pathway), 
+                as.numeric(loadings.out_of_pathway), 
+                alternative = "greater"
+                )$p.val
         }
     })
+    enrichment.result$go_id <- pathway.ids
+    enrichment.result$p_value <- pathway.pval
+    return(enrichment.result)
 }
 
 enrichment.chi_square <- function()
@@ -118,8 +150,26 @@ enrichment <- function(gene.subset,gene.data,enrichment.test){
 
 # sort the enrichment result by p-value,
 # then output the terms with the <num_terms> smallest p-values
-enrichment.output <- function(enrichment.result, gene.data, num_terms){
-    output <- data.frame(
+enrichment.output <- function(enrichment.result, gene.data, num_terms, filename){
+    output.data <- data.frame(
         # information included in output
+        p_value=array("",num_terms),
+        go_id=array("",num_terms),
+        name_1006=array("",num_terms),
+        go_linkage_type=array("",num_terms),
+        namespace_1003=array("",num_terms),
+        definition_1006=array("",num_terms),
+        stringsAsFactors = F
     )
+    pval <- enrichment.result$p_value
+    output.data$p_value <- sort(pval)[1:num_terms]
+    output.data$go_id <- enrichment.result$go_id[order(pval)[1:num_terms]]
+    for (id in output.data$go_id){
+        output.data$name_1006 <- unique(gene.data[gene.data$go_id==id,]$name_1006)
+        output.data$go_linkage_type <- unique(gene.data[gene.data$go_id==id,]$go_linkage_type)
+        output.data$namespace_1003 <- unique(gene.data[gene.data$go_id==id,]$namespace_1003)
+        output.data$definition_1006 <- unique(gene.data[gene.data$go_id==id,]$definition_1006)
+    }
+    write.csv(output.data,file=filename)
+    return(output.data)
 }
