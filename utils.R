@@ -98,7 +98,7 @@ get.gene.subset <- function(gene.stats.sorted, index.start, index.end){
 enrichment.wilcoxon <- function(gene.subset,gene.data){
     enrichment.result <- data.frame(
         go_id = array("",length(unique(gene.data$go_id))),
-        p_value = array("",length(unique(gene.data$go_id))),
+        p_value = array("",length(unique(gene.data$go_id))), # default 10 would be removed automatically in the sort() later
         stringsAsFactors = F
     )
     pathway.ids <- unique(gene.data$go_id)
@@ -108,30 +108,17 @@ enrichment.wilcoxon <- function(gene.subset,gene.data){
         index <- gene.subset$ensembl_gene_id %in% pathway.genes
         loadings.in_pathway <- gene.subset[index,]$avg_loading
         loadings.out_of_pathway <- gene.subset[!index,]$avg_loading
-        print(paste("GO term:",x,sep=""))
         if (length(pathway.genes) >= 6 # Question: why is this 6 and is this necessary and does it vary by different tests?
             && length(loadings.in_pathway)>0
             && length(loadings.out_of_pathway)>0
         ){ 
-            if(NA %in% c(loadings.in_pathway,loadings.out_of_pathway)){
-                print("NA!!!!")
-            }
-            print(paste("GO term:",x," beginning wilcox.test",sep=""))
-            print(index)
-            print(loadings.in_pathway)
-            print(loadings.out_of_pathway)
-            print(wilcox.test(
-                as.numeric(loadings.in_pathway), 
-                as.numeric(loadings.out_of_pathway), 
-                alternative = "greater"
-            )$p.val)
             wilcox.test(
                 as.numeric(loadings.in_pathway), 
                 as.numeric(loadings.out_of_pathway), 
                 alternative = "greater"
                 )$p.val
         }
-    })
+    }
     enrichment.result$go_id <- pathway.ids
     enrichment.result$p_value <- pathway.pval
     return(enrichment.result)
