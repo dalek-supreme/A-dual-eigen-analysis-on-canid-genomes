@@ -29,7 +29,7 @@ for (layer in layers){
     output <- enrichment.output(result, gene.data, num_terms, filename, p_cutoff=0.05)
 
     t3<-Sys.time()
-    print(paste("Enrichment on layer ",layer," completed. Time spent in this layer: ",t3-t2," min. Total time elapsed: ",t3-t1," min."sep=""))
+    print(paste("Enrichment on layer ",layer," completed. Time spent in this layer: ",t3-t2," min. Total time elapsed: ",t3-t1," min.",sep=""))
     print(paste(round_count/length(layers)*100,"% completed.",sep=""))
     round_count<-round_count+1
 }
@@ -41,7 +41,7 @@ print(paste("Enrichment completed. Total Time elapsed: ",t4-t1," min",sep=""))
 setwd("~/results_wilcox/small100")
 filename <- paste("output_wilcox_chr=",chr_t,".csv",sep="")
 print("Starting Enrichment..")
-t1<-Sys.time()
+#t1<-Sys.time()
 round_count<-1
 for (layer in layers){
     t2<-Sys.time()
@@ -55,7 +55,7 @@ for (layer in layers){
     output <- enrichment.output(result, gene.data, num_terms, filename, p_cutoff=0.05)
 
     t3<-Sys.time()
-    print(paste("Enrichment on layer ",layer," completed. Time spent in this layer: ",t3-t2," min. Total time elapsed: ",t3-t1," min."sep=""))
+    print(paste("Enrichment on layer ",layer," completed. Time spent in this layer: ",t3-t2," min. Total time elapsed: ",t3-t1," min.",sep=""))
     print(paste(round_count/length(layers)*100,"% completed.",sep=""))
     round_count<-round_count+1
 }
@@ -69,7 +69,7 @@ print(paste("Enrichment completed. Total Time elapsed: ",t4-t1," min",sep=""))
 setwd("~/results_wilcox/large100+small100")
 filename <- paste("output_wilcox_chr=",chr_t,".csv",sep="")
 print("Starting Enrichment..")
-t1<-Sys.time()
+#t1<-Sys.time()
 round_count<-1
 for (layer in layers){
     t2<-Sys.time()
@@ -83,7 +83,7 @@ for (layer in layers){
     output <- enrichment.output(result, gene.data, num_terms, filename, p_cutoff=0.05)
 
     t3<-Sys.time()
-    print(paste("Enrichment on layer ",layer," completed. Time spent in this layer: ",t3-t2," min. Total time elapsed: ",t3-t1," min."sep=""))
+    print(paste("Enrichment on layer ",layer," completed. Time spent in this layer: ",t3-t2," min. Total time elapsed: ",t3-t1," min.",sep=""))
     print(paste(round_count/length(layers)*100,"% completed.",sep=""))
     round_count<-round_count+1
 }
