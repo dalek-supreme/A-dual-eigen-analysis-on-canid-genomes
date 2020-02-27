@@ -87,8 +87,11 @@ get.gene.stats.sorted <- function(gene.stats){
 }
 
 # get subset for analysis with index from index.start to index.end
-get.gene.subset <- function(gene.stats.sorted, index.start, index.end){
-    return(gene.stats.sorted[index.start:index.end,])
+get.gene.subset <- function(gene.stats.sorted, index.range){
+    if (NA %in% gene.stats.sorted[index.range,1]){
+        stop(paste("get.gene.subset: index.start or index.end out of bound! Legit range: ",range(gene.stats.sorted[,1]),sep=""))
+    }
+    return(gene.stats.sorted[index.range,])
 }
 
 #test:
@@ -112,9 +115,6 @@ enrichment.wilcoxon <- function(gene.subset,gene.data){
             && length(loadings.in_pathway)>0
             && length(loadings.out_of_pathway)>0
         ){ 
-            if(NA %in% c(loadings.in_pathway,loadings.out_of_pathway)){
-                print("NA!!!!")
-            }
             wilcox.test(
                 as.numeric(loadings.in_pathway), 
                 as.numeric(loadings.out_of_pathway), 
