@@ -6,6 +6,8 @@ source("database.R")
 #source("utils.R")
 #load("gene.data.Rdata")
 
+sink("LOG_R_WILCOXON.txt")
+
 # Wilcoxon Rank Sum Enrichment
 layers <- 1:10
 num_terms <- 50
@@ -92,5 +94,7 @@ for (layer in layers){
 }
 t4<-Sys.time()
 print(paste("Enrichment completed. Total Time elapsed: ",t4-t1," min",sep=""))
+
+sink()
 
 #do_enrich <- function(...,filename,range)
