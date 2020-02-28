@@ -101,7 +101,9 @@ get.gene.subset <- function(gene.stats.sorted, index.range){
 enrichment.wilcoxon <- function(gene.subset,gene.data){
     enrichment.result <- data.frame(
         go_id = array("",length(unique(gene.data$go_id))),
-        p_value = array("",length(unique(gene.data$go_id))),
+        p_value.greater = array("",length(unique(gene.data$go_id))),
+        p_value.less = array("",length(unique(gene.data$go_id))),
+        p_value.two.sided = array("",length(unique(gene.data$go_id))),
         stringsAsFactors = F
     )
     pathway.ids <- unique(gene.data$go_id)
@@ -115,7 +117,7 @@ enrichment.wilcoxon <- function(gene.subset,gene.data){
             && length(loadings.in_pathway)>0
             && length(loadings.out_of_pathway)>0
         ){ 
-            wilcox.test(
+                wilcox.test(
                 as.numeric(loadings.in_pathway), 
                 as.numeric(loadings.out_of_pathway), 
                 alternative = "greater"
@@ -124,53 +126,96 @@ enrichment.wilcoxon <- function(gene.subset,gene.data){
             10 # set as 10>1 so as to be omitted after sorting 
         }
     })
+    enrichment.result$p_value.greater <- pathway.pval
+
+    pathway.pval <- sapply(pathway.ids, function(x){
+        index <- gene.data$go_id==x
+        pathway.genes <- gene.data[index,]$ensembl_gene_id
+        index <- gene.subset$ensembl_gene_id %in% pathway.genes
+        loadings.in_pathway <- gene.subset[index,]$avg_loading
+        loadings.out_of_pathway <- gene.subset[!index,]$avg_loading
+        if (length(pathway.genes) >= 6 # Question: why is this 6 and is this necessary and does it vary by different tests?
+            && length(loadings.in_pathway)>0
+            && length(loadings.out_of_pathway)>0
+        ){ 
+                wilcox.test(
+                as.numeric(loadings.in_pathway), 
+                as.numeric(loadings.out_of_pathway), 
+                alternative = "less"
+                )$p.val
+        } else {
+            10 # set as 10>1 so as to be omitted after sorting 
+        }
+    })
+    enrichment.result$p_value.less <- pathway.pval
+
+    pathway.pval <- sapply(pathway.ids, function(x){
+        index <- gene.data$go_id==x
+        pathway.genes <- gene.data[index,]$ensembl_gene_id
+        index <- gene.subset$ensembl_gene_id %in% pathway.genes
+        loadings.in_pathway <- gene.subset[index,]$avg_loading
+        loadings.out_of_pathway <- gene.subset[!index,]$avg_loading
+        if (length(pathway.genes) >= 6 # Question: why is this 6 and is this necessary and does it vary by different tests?
+            && length(loadings.in_pathway)>0
+            && length(loadings.out_of_pathway)>0
+        ){ 
+                wilcox.test(
+                as.numeric(loadings.in_pathway), 
+                as.numeric(loadings.out_of_pathway), 
+                alternative = "two.sided"
+                )$p.val
+        } else {
+            10 # set as 10>1 so as to be omitted after sorting 
+        }
+    })
+    enrichment.result$p_value.two.sided <- pathway.pval
+
     enrichment.result$go_id <- pathway.ids
-    enrichment.result$p_value <- pathway.pval
     return(enrichment.result)
 }
 
 enrichment.chi_square <- function()
 enrichment.blahblah <- function()
 
-# a generic function for enrichment
-# does <enrichment.test> on given subset w/ loadings
-# where <enrichment.test> is any statistical two-sample test,
-# such as <wilcox.test> and the chi-square test, etc.
-enrichment <- function(gene.subset,gene.data,stat.test){
-    enrichment.result <- data.frame(
-        go_id = array("",length(unique(gene.data$go_id))),
-        p_value = array("",length(unique(gene.data$go_id))),
-        stringsAsFactors = F
-    )
-    pathway.ids <- unique(gene.data$go_id)
-    pathway.pval <- sapply(pathway.ids, function(x){
-        index <- gene.data$go_id==x
-        pathway.genes <- gene.data[index,]$ensembl_gene_id
-        index <- gene.subset$ensembl_gene_id %in% pathway.genes
-        loadings.in_pathway <- gene.subset[index,]$avg_loading
-        loadings.out_of_pathway <- gene.subset[!index,]$avg_loading
-        if (length(pathway.genes) >= 6 # Question: why is this 6 and is this necessary and does it vary by different tests?
-            && length(loadings.in_pathway)>0
-            && length(loadings.out_of_pathway)>0
-        ){ 
-            stat.test(
-                as.numeric(loadings.in_pathway), 
-                as.numeric(loadings.out_of_pathway), 
-                alternative = "greater"
-                )$p.val
-        } else {
-            10 # set as 10>1 so as to be omitted after sorting 
-        }
-    })
-    enrichment.result$go_id <- pathway.ids
-    enrichment.result$p_value <- pathway.pval
-    return(enrichment.result)
-}
+# # a generic function for enrichment
+# # does <enrichment.test> on given subset w/ loadings
+# # where <enrichment.test> is any statistical two-sample test,
+# # such as <wilcox.test> and the chi-square test, etc.
+# enrichment <- function(gene.subset,gene.data,stat.test){
+#     enrichment.result <- data.frame(
+#         go_id = array("",length(unique(gene.data$go_id))),
+#         p_value = array("",length(unique(gene.data$go_id))),
+#         stringsAsFactors = F
+#     )
+#     pathway.ids <- unique(gene.data$go_id)
+#     pathway.pval <- sapply(pathway.ids, function(x){
+#         index <- gene.data$go_id==x
+#         pathway.genes <- gene.data[index,]$ensembl_gene_id
+#         index <- gene.subset$ensembl_gene_id %in% pathway.genes
+#         loadings.in_pathway <- gene.subset[index,]$avg_loading
+#         loadings.out_of_pathway <- gene.subset[!index,]$avg_loading
+#         if (length(pathway.genes) >= 6 # Question: why is this 6 and is this necessary and does it vary by different tests?
+#             && length(loadings.in_pathway)>0
+#             && length(loadings.out_of_pathway)>0
+#         ){ 
+#             stat.test(
+#                 as.numeric(loadings.in_pathway), 
+#                 as.numeric(loadings.out_of_pathway), 
+#                 alternative = "greater"
+#                 )$p.val
+#         } else {
+#             10 # set as 10>1 so as to be omitted after sorting 
+#         }
+#     })
+#     enrichment.result$go_id <- pathway.ids
+#     enrichment.result$p_value <- pathway.pval
+#     return(enrichment.result)
+# }
 
 # sort the enrichment result by p-value,
 # then output the terms with the <num_terms> smallest p-values
-enrichment.output <- function(enrichment.result, gene.data, num_terms, filename, p_cutoff=0.05){
-    pval <- enrichment.result$p_value
+enrichment.output.greater <- function(enrichment.result, gene.data, num_terms, filename, p_cutoff=0.05){
+    pval <- enrichment.result$p_value.greater
     num_terms <- min(
         num_terms,
         length(which(sort(pval)<=p_cutoff))
@@ -194,6 +239,72 @@ enrichment.output <- function(enrichment.result, gene.data, num_terms, filename,
         output.data$namespace_1003[num_id] <- unique(gene.data[gene.data$go_id==id,]$namespace_1003)
         output.data$definition_1006[num_id] <- unique(gene.data[gene.data$go_id==id,]$definition_1006)
     }
-    write.csv(output.data,file=filename)
+    write.csv(output.data,file=paste(filename,"greater.csv",sep=""))
     return(output.data)
+}
+
+enrichment.output.less <- function(enrichment.result, gene.data, num_terms, filename, p_cutoff=0.05){
+    pval <- enrichment.result$p_value.less
+    num_terms <- min(
+        num_terms,
+        length(which(sort(pval)<=p_cutoff))
+        )
+    output.data <- data.frame(
+        # information included in output
+        p_value=array("",num_terms),
+        go_id=array("",num_terms),
+        name_1006=array("",num_terms),
+        go_linkage_type=array("",num_terms),
+        namespace_1003=array("",num_terms),
+        definition_1006=array("",num_terms),
+        stringsAsFactors = F
+    )
+    output.data$p_value <- sort(pval)[1:num_terms]
+    output.data$go_id <- enrichment.result$go_id[order(pval)[1:num_terms]]
+    for (num_id in 1:num_terms){
+        id<-output.data$go_id[num_id]
+        output.data$name_1006[num_id] <- unique(gene.data[gene.data$go_id==id,]$name_1006)
+        output.data$go_linkage_type[num_id] <- paste(unique(gene.data[gene.data$go_id==id,]$go_linkage_type),collapse = ",")
+        output.data$namespace_1003[num_id] <- unique(gene.data[gene.data$go_id==id,]$namespace_1003)
+        output.data$definition_1006[num_id] <- unique(gene.data[gene.data$go_id==id,]$definition_1006)
+    }
+    write.csv(output.data,file=paste(filename,"less.csv",sep=""))
+    return(output.data)
+}
+
+enrichment.output.two.sided <- function(enrichment.result, gene.data, num_terms, filename, p_cutoff=0.05){
+    pval <- enrichment.result$p_value.two.sided
+    num_terms <- min(
+        num_terms,
+        length(which(sort(pval)<=p_cutoff))
+        )
+    output.data <- data.frame(
+        # information included in output
+        p_value=array("",num_terms),
+        go_id=array("",num_terms),
+        name_1006=array("",num_terms),
+        go_linkage_type=array("",num_terms),
+        namespace_1003=array("",num_terms),
+        definition_1006=array("",num_terms),
+        stringsAsFactors = F
+    )
+    output.data$p_value <- sort(pval)[1:num_terms]
+    output.data$go_id <- enrichment.result$go_id[order(pval)[1:num_terms]]
+    for (num_id in 1:num_terms){
+        id<-output.data$go_id[num_id]
+        output.data$name_1006[num_id] <- unique(gene.data[gene.data$go_id==id,]$name_1006)
+        output.data$go_linkage_type[num_id] <- paste(unique(gene.data[gene.data$go_id==id,]$go_linkage_type),collapse = ",")
+        output.data$namespace_1003[num_id] <- unique(gene.data[gene.data$go_id==id,]$namespace_1003)
+        output.data$definition_1006[num_id] <- unique(gene.data[gene.data$go_id==id,]$definition_1006)
+    }
+    write.csv(output.data,file=paste(filename,"two.sided.csv",sep=""))
+    return(output.data)
+}
+
+enrichment.output <- function(enrichment.result, gene.data, num_terms, filename, p_cutoff=0.05){
+    return(rbind(
+        enrichment.output.greater(enrichment.result, gene.data, num_terms, filename, p_cutoff),
+        enrichment.output.less(enrichment.result, gene.data, num_terms, filename, p_cutoff),
+        enrichment.output.two.sided(enrichment.result, gene.data, num_terms, filename, p_cutoff),
+    ))
 }
