@@ -194,17 +194,14 @@ enrichment.wilcoxon <- function(gene.subset,gene.data){
 # then output the terms with the <num_terms> smallest p-values
 
 enrichment.output.greater <- function(enrichment.result, gene.data, num_terms, filename, p_cutoff=0.05){
-    print("AAAAAAAAAAAAAAA")
     pval <- enrichment.result$p_value.greater
     num_terms <- min(
         num_terms,
         length(which(sort(pval)<=p_cutoff))
         )
     if (num_terms==0){
-        print("NONONONONONONONONONONONO")
         return(data.frame())
     }  
-    print("YYYYYYYYYYYYYY")
     output.data <- data.frame(
         # information included in output
         p_value.greater=array("",num_terms),
