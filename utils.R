@@ -104,6 +104,8 @@ enrichment.wilcoxon <- function(gene.subset,gene.data){
         p_value.greater = array("",length(unique(gene.data$go_id))),
         p_value.less = array("",length(unique(gene.data$go_id))),
         p_value.two.sided = array("",length(unique(gene.data$go_id))),
+        genes.in.set.count = array("",length(unique(gene.data$go_id))),
+        genes.out_of.set.count = array("",length(unique(gene.data$go_id))),
         stringsAsFactors = F
     )
     pathway.ids <- unique(gene.data$go_id)
@@ -113,9 +115,12 @@ enrichment.wilcoxon <- function(gene.subset,gene.data){
         index <- gene.subset$ensembl_gene_id %in% pathway.genes
         loadings.in_pathway <- gene.subset[index,]$avg_loading
         loadings.out_of_pathway <- gene.subset[!index,]$avg_loading
+        genes.in.set.count <- length(loadings.in_pathway)
+        genes.out_of.set.count <- length(loadings.out_of_pathway)
+        
         if (length(pathway.genes) >= 6 # Question: why is this 6 and is this necessary and does it vary by different tests?
-            && length(loadings.in_pathway)>0
-            && length(loadings.out_of_pathway)>0
+            && genes.in.set.count>0
+            && genes.out_of.set.count>0
         ){ 
                 wilcox.test(
                 as.numeric(loadings.in_pathway), 
@@ -305,6 +310,6 @@ enrichment.output <- function(enrichment.result, gene.data, num_terms, filename,
     return(rbind(
         enrichment.output.greater(enrichment.result, gene.data, num_terms, filename, p_cutoff),
         enrichment.output.less(enrichment.result, gene.data, num_terms, filename, p_cutoff),
-        enrichment.output.two.sided(enrichment.result, gene.data, num_terms, filename, p_cutoff),
+        enrichment.output.two.sided(enrichment.result, gene.data, num_terms, filename, p_cutoff)
     ))
 }
