@@ -1,7 +1,7 @@
 # enrichment analysis on loadings
 
 setwd("~") # set to the correct working dir
-
+load("gene.data.Rdata")
 source("database.R")
 #source("utils.R")
 #load("gene.data.Rdata")
@@ -26,7 +26,8 @@ for (layer in layers){
     gene.subset <- get.gene.subset(gene.stats.sorted,index.range=1:100)
     result <- enrichment.wilcoxon(gene.subset,gene.data)
     filename <- paste("output_wilcox_chr=",chr_t,"_layer=",layer,sep="")
-    output <- enrichment.output(result, gene.data, num_terms, filename, p_cutoff=0.05)
+    enrichment.output(result, gene.data, num_terms, filename, p_cutoff=0.05)
+    #enrichment.output.all(result, gene.data, filename)
 
     t3<-Sys.time()
     print(paste("Enrichment on layer ",layer," completed. Time spent in this layer: ",t3-t2," min. Total time elapsed: ",t3-t1," min.",sep=""))
@@ -52,7 +53,8 @@ for (layer in layers){
     gene.subset <- get.gene.subset(gene.stats.sorted,index.range=(dim(gene.stats.sorted)[1]-100:dim(gene.stats.sorted)[1]))
     result <- enrichment.wilcoxon(gene.subset,gene.data)
     filename <- paste("output_wilcox_chr=",chr_t,"_layer=",layer,sep="")
-    output <- enrichment.output(result, gene.data, num_terms, filename, p_cutoff=0.05)
+    enrichment.output(result, gene.data, num_terms, filename, p_cutoff=0.05)
+    #enrichment.output.all(result, gene.data, filename)
 
     t3<-Sys.time()
     print(paste("Enrichment on layer ",layer," completed. Time spent in this layer: ",t3-t2," min. Total time elapsed: ",t3-t1," min.",sep=""))
@@ -80,7 +82,8 @@ for (layer in layers){
     gene.subset <- get.gene.subset(gene.stats.sorted,index.range=(c((1:50),dim(gene.stats.sorted)[1]-50:dim(gene.stats.sorted)[1])))
     result <- enrichment.wilcoxon(gene.subset,gene.data)
     filename <- paste("output_wilcox_chr=",chr_t,"_layer=",layer,sep="")
-    output <- enrichment.output(result, gene.data, num_terms, filename, p_cutoff=0.05)
+    enrichment.output(result, gene.data, num_terms, filename, p_cutoff=0.05)
+    #enrichment.output.all(result, gene.data, filename)
 
     t3<-Sys.time()
     print(paste("Enrichment on layer ",layer," completed. Time spent in this layer: ",t3-t2," min. Total time elapsed: ",t3-t1," min.",sep=""))
