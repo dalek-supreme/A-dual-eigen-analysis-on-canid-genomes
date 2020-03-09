@@ -26,10 +26,10 @@ for (layer in layers)
     result.positive <- enrichment.wilcoxon(gene.stats.positive,gene.data)
     result.negative <- enrichment.wilcoxon(gene.stats.negative,gene.data)
 
-    setwd("~/enrichment/output")
+    setwd("~/enrichment/output/positive")
     filename <- paste("positive.wilcox.chr=",chr_t,".layer=",layer,".",sep="")
     enrichment.output(result.positive, gene.data, num_terms, filename, p_cutoff=0.05)
-    
+    setwd("~/enrichment/output/negative")   
     filename <- paste("negative.wilcox.chr=",chr_t,".layer=",layer,".",sep="")
     enrichment.output(result.negative, gene.data, num_terms, filename, p_cutoff=0.05)
 
