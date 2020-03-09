@@ -5,7 +5,6 @@ prj <- function(vec_from,vec_to) {
     return(inner_prod/norm_vt)
 }
 
-
 # count the SNP sites per gene
 get.gene.snp.counts_and_sums <- function(layer,r_mtx_from_svd,gene.data) {
     result.data <- data.frame(
@@ -69,6 +68,11 @@ get.gene.data.remove0s <- function(gene.stats,gene.data){
     return(gene.data[!zeros.index,])
 }
 
+# remove genes with no GO ids
+gene.db.remove_unannotated <- function(gene.data){
+    return(gene.data[gene.data$go_id!="",])
+}
+
 #gene.stats[(gene.stats$ensembl_gene_id %in% unique(get.gene.data.remove0s(gene.stats,gene.data)$ensembl_gene_id)),]$count
 #gene.stats[!(gene.stats$ensembl_gene_id %in% unique(get.gene.data.remove0s(gene.stats,gene.data)$ensembl_gene_id)),]$count
 
@@ -92,6 +96,16 @@ get.gene.subset <- function(gene.stats.sorted, index.range){
         stop(paste("get.gene.subset: index.start or index.end out of bound! Legit range: ",range(gene.stats.sorted[,1]),sep=""))
     }
     return(gene.stats.sorted[index.range,])
+}
+
+gene.subset.pole_split <- function(gene.stats,pole){
+    if (pole=="positive"){
+        return(gene.stats[gene.stats$sum>0,])
+    } else if (pole=="negative") {
+        return(gene.stats[gene.stats$sum<0,])
+    } else {
+        stop(paste(" Invalid argument \"",pole,"\": should be \"positive\" or \"negative\"!\n",sep=""))
+    }
 }
 
 #test:
