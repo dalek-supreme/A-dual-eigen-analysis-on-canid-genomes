@@ -34,6 +34,7 @@ for (layer in layers)
     enrichment.output(result.negative, gene.data, num_terms, filename, p_cutoff=0.05)
 
     #enrichment.output.all(result, gene.data, filename)
+    cat(paste("Layer",layer,"finished.\n",sep=" "))
 }
 
 
