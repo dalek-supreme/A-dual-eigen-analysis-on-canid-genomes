@@ -100,9 +100,9 @@ get.gene.subset <- function(gene.stats.sorted, index.range){
 
 gene.subset.pole_split <- function(gene.stats,pole){
     if (pole=="positive"){
-        return(gene.stats[gene.stats$sum>0,])
+        return(gene.stats[gene.stats$avg_loading>0,])
     } else if (pole=="negative") {
-        return(gene.stats[gene.stats$sum<0,])
+        return(gene.stats[gene.stats$avg_loading<0,])
     } else {
         stop(paste(" Invalid argument \"",pole,"\": should be \"positive\" or \"negative\"!\n",sep=""))
     }
