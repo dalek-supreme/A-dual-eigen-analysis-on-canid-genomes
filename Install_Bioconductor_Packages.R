@@ -6,20 +6,27 @@
 # AnnotationHub
 # rtracklayer
 
-if (!require(SNPRelate)) install.packages('SNPRelate')
-library(SNPRelate)
+# if (!require(SNPRelate)) install.packages('SNPRelate')
+# library(SNPRelate)
 
-if (!require(biomaRt)) install.packages('biomaRt')
-library(biomaRt)
+# if (!require(biomaRt)) install.packages('biomaRt')
+# library(biomaRt)
 
-if (!require(gdsfmt)) install.packages('gdsfmt')
-library(gdsfmt)
+# if (!require(gdsfmt)) install.packages('gdsfmt')
+# library(gdsfmt)
 
-if (!require(clusterProfiler)) install.packages('clusterProfiler')
-library(clusterProfiler)
+# if (!require(clusterProfiler)) install.packages('clusterProfiler')
+# library(clusterProfiler)
 
-if (!require(AnnotationHub)) install.packages('AnnotationHub')
-library(AnnotationHub)
+# if (!require(AnnotationHub)) install.packages('AnnotationHub')
+# library(AnnotationHub)
 
-if (!require(rtracklayer)) install.packages('rtracklayer')
-library(rtracklayer)
+# if (!require(rtracklayer)) install.packages('rtracklayer')
+# library(rtracklayer)
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("SNPRelate")
+BiocManager::install("biomaRt")
+BiocManager::install("gdsfmt")
