@@ -20,17 +20,26 @@ gene.loading.stats <- function(snp.svd.right, gene.data) {
     )
     names(result) <- c("ensembl_gene_id","loading.count","loading.sum","loading.avg")
 
+    total.genes <- length(gene.unique$ensembl_gene_id)
+    total.sites <- dim(snp.svd.right)[1]
+
     for (gene.index in seq_along(gene.unique$ensembl_gene_id)) {
         gene.loading.count <- 0
         gene.loading.sum <- array(0,dim(snp.svd.right)[2]) # do it once for all layers
         gene.loading.avg <- array(0,dim(snp.svd.right)[2])
-        for (site.index in dim(snp.svd.right)[1]) {
+        for (site.index in seq(dim(snp.svd.right)[1])) {
             if (snp.list$chromosome[site.index] == gene.unique$chromosome_name[gene.index]){
                 if (gene.unique$start_position[gene.index] <= snp.list$position[site.index]
                 && gene.unique$end_position[gene.index] >= snp.list$position[site.index]
                 ) {
                     gene.loading.count <- gene.loading.count+1
                     gene.loading.sum <- gene.loading.sum + snp.svd.right[site.index,]
+                    
+                    #print(paste("gene:",gene.index,"/",total.genes,"=",gene.index/total.genes,sep=""))
+                    #print(paste("site:",site.index,"/",total.sites,"=",site.index/total.sites,sep=""))
+                    # t2<-proc.time()-t1
+                    # print(t2[3])
+                    # print(paste("Estimated time remaining: ",t2[3]*total.genes/gene.index-t2[3]," seconds",sep=""))
                 }
             }
         }
@@ -40,6 +49,11 @@ gene.loading.stats <- function(snp.svd.right, gene.data) {
         result$loading.count[gene.index] <- gene.loading.count
         result$loading.sum[gene.index,] <- gene.loading.sum
         result$loading.avg[gene.index,] <- gene.loading.avg
+
+        print(paste("gene:",gene.index,"/",total.genes,"=",gene.index/total.genes,sep=""))
+        t2<-proc.time()-t1
+        print(t2[3])
+        print(paste("Estimated time remaining: ",t2[3]*total.genes/gene.index-t2[3]," seconds",sep=""))
     }
     return(result)
 }
@@ -147,7 +161,7 @@ enrichment.wilcoxon <- function(gene.subset,gene.data){
 # sort the enrichment result by p-value,
 # then output the terms with the <num_terms> smallest p-values
 
-enrichment.output.greater <- function(enrichment.result, gene.data, num_terms=20, filename, p_cutoff=0.05){
+enrichment.output.greater <- function(enrichment.result, gene.data, num_terms=20, filename="wilcox", p_cutoff=0.05){
     pval <- enrichment.result$p_value.greater
     num_terms <- min(
         num_terms,
@@ -179,11 +193,11 @@ enrichment.output.greater <- function(enrichment.result, gene.data, num_terms=20
         output.data$namespace_1003[num_id] <- unique(gene.data[gene.data$go_id==id,]$namespace_1003)
         output.data$definition_1006[num_id] <- unique(gene.data[gene.data$go_id==id,]$definition_1006)
     }
-    write.csv(output.data,file=paste(filename,"greater.csv",sep=""))
+    write.csv(output.data,file=paste(filename,".greater.csv",sep=""))
     return(output.data)
 }
 
-enrichment.output.less <- function(enrichment.result, gene.data, num_terms=20, filename, p_cutoff=0.05){
+enrichment.output.less <- function(enrichment.result, gene.data, num_terms=20, filename="wilcox", p_cutoff=0.05){
     pval <- enrichment.result$p_value.less
     num_terms <- min(
         num_terms,
@@ -215,11 +229,11 @@ enrichment.output.less <- function(enrichment.result, gene.data, num_terms=20, f
         output.data$namespace_1003[num_id] <- unique(gene.data[gene.data$go_id==id,]$namespace_1003)
         output.data$definition_1006[num_id] <- unique(gene.data[gene.data$go_id==id,]$definition_1006)
     }
-    write.csv(output.data,file=paste(filename,"less.csv",sep=""))
+    write.csv(output.data,file=paste(filename,".less.csv",sep=""))
     return(output.data)
 }
 
-enrichment.output.two.sided <- function(enrichment.result, gene.data, num_terms=20, filename, p_cutoff=0.05){
+enrichment.output.two.sided <- function(enrichment.result, gene.data, num_terms=20, filename="wilcox", p_cutoff=0.05){
     pval <- enrichment.result$p_value.two.sided
     num_terms <- min(
         num_terms,
@@ -251,11 +265,11 @@ enrichment.output.two.sided <- function(enrichment.result, gene.data, num_terms=
         output.data$namespace_1003[num_id] <- unique(gene.data[gene.data$go_id==id,]$namespace_1003)
         output.data$definition_1006[num_id] <- unique(gene.data[gene.data$go_id==id,]$definition_1006)
     }
-    write.csv(output.data,file=paste(filename,"two.sided.csv",sep=""))
+    write.csv(output.data,file=paste(filename,".two.sided.csv",sep=""))
     return(output.data)
 }
 
-enrichment.output <- function(enrichment.result, gene.data, num_terms=20, filename, p_cutoff=0.05){
+enrichment.output <- function(enrichment.result, gene.data, num_terms=20, filename="wilcox", p_cutoff=0.05){
         enrichment.output.greater(enrichment.result, gene.data, num_terms, filename, p_cutoff)
         enrichment.output.less(enrichment.result, gene.data, num_terms, filename, p_cutoff)
         enrichment.output.two.sided(enrichment.result, gene.data, num_terms, filename, p_cutoff)
