@@ -7,7 +7,8 @@ snp.list.all <- snpgdsSNPList(genome)
 
 snp.id.no_missing <- snpgdsSelectSNP(genome,missing.rate=0)
 
-load("snpset.Rdata")
+#load("snpset.Rdata")
+source("LD_pruning.R")
 snp.id.pruned <- unlist(unname(snpset))
 snp.id.pruned.no_missing <- intersect(snp.id.pruned,snp.id.no_missing)
 
