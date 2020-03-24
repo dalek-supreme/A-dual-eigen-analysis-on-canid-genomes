@@ -75,9 +75,9 @@ gene.stats.sort <- function(gene.stats.layer){
         loading.avg=array(0,length(gene.stats.layer$loading.avg)),
         stringsAsFactors = F
     )
-    avg <- gene.stats.layer[gene.stats.layer$count!=0,]$loading.avg
-    result.data$loading.avg <- sort(avg)
-    result.data$ensembl_gene_id <- 
+    avg <- gene.stats.layer$loading.avg
+    result$loading.avg <- sort(avg)
+    result$ensembl_gene_id <- 
         gene.stats.layer$ensembl_gene_id[order(avg)]
     return(result)
 }
@@ -111,9 +111,10 @@ enrichment.wilcoxon <- function(gene.subset,gene.data){
         genes.out_of.set.count = array("",length(unique(gene.data$go_id))),
         stringsAsFactors = F
     )
+    # t1 <- proc.time()
     pathway.ids <- unique(gene.data$go_id)
-
-    for (id_num in (1:length(pathway.ids))){
+    # pathway.total <- length(pathway.ids)
+    for (id_num in seq_along(pathway.ids)){
         index <- (gene.data$go_id==pathway.ids[id_num])
         pathway.genes <- gene.data[index,]$ensembl_gene_id
         index <- gene.subset$ensembl_gene_id %in% pathway.genes
@@ -152,6 +153,9 @@ enrichment.wilcoxon <- function(gene.subset,gene.data){
             enrichment.result$p_value.less[id_num] <- 10
             enrichment.result$p_value.two.sided[id_num] <- 10
         }
+    # print(paste("gene:",id_num,"/",pathway.total,"=",id_num/pathway.total,sep=""))
+    # t2 <- proc.time()-t1
+    # print(paste("Time elapsed in this layer: ",t2[3],"Estimated time remaining: ",t2[3]*pathway.total/id_num-t2[3],sep=""))
     }
 
     enrichment.result$go_id <- pathway.ids
