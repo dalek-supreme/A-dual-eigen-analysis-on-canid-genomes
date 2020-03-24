@@ -313,6 +313,11 @@ sink()
 save(gene.stats,file="gene.stats.Rdata")
 t2 <- proc.time()-t1
 print(paste("gene.stats acquired. Time elapsed: ",t2[3],sep=""))
+
+
+
+load("gene.db.Rdata")
+load("gene.stats.Rdata")
 t5<-proc.time()
 for (layer in layers)
 {
@@ -337,7 +342,7 @@ for (layer in layers)
     print(paste("Estimated time remaining: ",t6[3]*(length(layers)/layer-1)/60,"minutes.",sep=""))
 }
 
-t7 <- proc.time()-t0
+t7 <- proc.time()-t5
 print(paste("Analysis complete. Total time: ",t7[3],sep=""))
 
 # PID=37339

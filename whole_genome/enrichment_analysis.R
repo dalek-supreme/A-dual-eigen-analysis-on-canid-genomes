@@ -25,7 +25,7 @@ for (layer in layers)
 {
     t3 <- proc.time()
     gene.stats.layer <- gene.loadings.stats.get_layer(gene.stats,layer)
-    gene.stats.sorted <-  gene.stats.sort(gene.stats)
+    gene.stats.sorted <-  gene.stats.sort(gene.stats.layer)
     gene.stats.positive <- gene.subset.pole_split(gene.stats.sorted,pole="positive")
     gene.stats.negative <- gene.subset.pole_split(gene.stats.sorted,pole="negative")
 
