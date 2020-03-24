@@ -313,7 +313,7 @@ sink()
 save(gene.stats,file="gene.stats.Rdata")
 t2 <- proc.time()-t1
 print(paste("gene.stats acquired. Time elapsed: ",t2[3],sep=""))
-
+t5<-proc.time()
 for (layer in layers)
 {
     t3 <- proc.time()
@@ -322,7 +322,7 @@ for (layer in layers)
     gene.stats.positive <- gene.subset.pole_split(gene.stats.sorted,pole="positive")
     gene.stats.negative <- gene.subset.pole_split(gene.stats.sorted,pole="negative")
 
-    result.positive <- enrichment.wilcoxon(gene.stats.positive,gene.db)
+    result.positive <- enrichment.wilcoxon(gene.stats.positive,gene.db) # about 7 minutes
     result.negative <- enrichment.wilcoxon(gene.stats.negative,gene.db)
     setwd(paste("~/enrichment/",layer,sep=""))
     save(result.positive,result.negative,file="result.Rdata")
@@ -333,9 +333,11 @@ for (layer in layers)
     #enrichment.output.all(result, gene.data, filename)
     t4 <- proc.time()-t3
     print(paste("Layer ",layer," finished. Time elapsed: ",t4[3],sep=""))
+    t6<-proc.time()-t5
+    print(paste("Estimated time remaining: ",t6[3]*(length(layers)/layer-1)/60,"minutes.",sep=""))
 }
 
-t5 <- proc.time()-t0
-print(paste("Analysis complete. Total time: ",t5[3],sep=""))
+t7 <- proc.time()-t0
+print(paste("Analysis complete. Total time: ",t7[3],sep=""))
 
 # PID=37339
