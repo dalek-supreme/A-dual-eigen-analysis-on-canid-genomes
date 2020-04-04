@@ -36,3 +36,4 @@ BiocManager::install("gdsfmt")
 
 install.packages("RobRSVD")
 install.packages("rsvd")
+install.packages("ape")
