@@ -9,7 +9,7 @@ for (i in seq_along(sample.id)) {
 demographic.data <- demographic.data[demographic.index,]
 
 setwd("enrichment/demographic/")
-for (layer in num_layers) {
+for (layer in seq(num_layers)) {
     canid.order <- order(snp.svd$u[,layer])
     demographic.output <- demographic.data[canid.order,]
     write.csv(demographic.output,file=(paste('demographic_layer_',layer,'.csv',sep='')))
