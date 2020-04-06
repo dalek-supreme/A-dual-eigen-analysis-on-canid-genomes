@@ -21,3 +21,6 @@ invalid.id <- as.character(demographic.data[is.na(demographic.data$Latitude)|is.
 obj<-phylo.to.map(drop.tip(snp.tree,invalid.id),lat.long,plot=FALSE)
 
 plot(obj,type="phylogram",asp=1)
+
+
+# count #edges per node
