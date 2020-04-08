@@ -49,3 +49,81 @@ pdf(file='right-variance.pdf')
 plot(snp.svd.stats[,'right variance'])
 dev.off()
 
+num_obs <- 20
+snp.svd.orders <- list()
+snp.svd.orders$left <- array(0,c(num_layers,num_obs))
+snp.svd.orders$right <- array(0,c(num_layers,num_obs))
+
+for (layer in seq(num_layers)) {
+    snp.svd.orders$left[layer,] <- order(snp.svd$u[,layer])[seq(num_obs)]
+    snp.svd.orders$right[layer,] <- order(snp.svd$v[,layer])[seq(num_obs)]
+}
+
+num_obs <- 20
+snp.svd.orders.end <- list()
+snp.svd.orders.end$left <- array(0,c(num_layers,num_obs))
+snp.svd.orders.end$right <- array(0,c(num_layers,num_obs))
+
+for (layer in seq(num_layers)) {
+    snp.svd.orders.end$left[layer,] <- order(snp.svd$u[,layer])[length(snp.svd$u[,layer])+1-seq(num_obs)]
+    snp.svd.orders.end$right[layer,] <- order(snp.svd$v[,layer])[length(snp.svd$v[,layer])+1-seq(num_obs)]
+}
+
+num_obs <- 20
+snp.svd.values <- list()
+snp.svd.values$left <- array(0,c(num_layers,num_obs))
+snp.svd.values$right <- array(0,c(num_layers,num_obs))
+
+for (layer in seq(num_layers)) {
+    snp.svd.values$left[layer,] <- sort(snp.svd$u[,layer])[seq(num_obs)]
+    snp.svd.values$right[layer,] <- sort(snp.svd$v[,layer])[seq(num_obs)]
+}
+
+num_obs <- 20
+snp.svd.values.end <- list()
+snp.svd.values.end$left <- array(0,c(num_layers,num_obs))
+snp.svd.values.end$right <- array(0,c(num_layers,num_obs))
+
+for (layer in seq(num_layers)) {
+    snp.svd.values.end$left[layer,] <- sort(snp.svd$u[,layer])[length(snp.svd$u[,layer])+1-seq(num_obs)]
+    snp.svd.values.end$right[layer,] <- sort(snp.svd$v[,layer])[length(snp.svd$v[,layer])+1-seq(num_obs)]
+}
+
+cor(order(snp.svd$u[,5])[seq(num_obs)],order(snp.svd$u[,6])[seq(num_obs)])
+cor(order(snp.svd$u[,5])[seq(5)],order(snp.svd$u[,6])[seq(5)])
+cor(sort(snp.svd$u[,5])[seq(5)],sort(snp.svd$u[,6])[seq(5)])
+
+cor(order(snp.svd$u[,5])[length(snp.svd$u[,5])+1-seq(5)],order(snp.svd$u[,6])[length(snp.svd$u[,6])+1-seq(5)])
+cor(sort(snp.svd$u[,5])[length(snp.svd$u[,5])+1-seq(5)],sort(snp.svd$u[,6])[length(snp.svd$u[,6])+1-seq(5)])
+
+layer1_times_1 <- snp.svd$u[,1] %*% t(snp.svd$v[,1])
+
+pdf(file='heatmap1.pdf')
+heatmap(layer1_times_1[,1:200])
+dev.off()
+
+layer3_times_3 <- sort(snp.svd$u[,3]) %*% t(sort(snp.svd$v[,3]))
+pdf(file='heatmap2.pdf')
+heatmap(layer3_times_3[,1:200])
+dev.off()
+
+
+layer4_times_4 <- sort(snp.svd$u[,4]) %*% t(sort(snp.svd$v[,4]))
+
+layer4<-array(0,c(127,200))
+for (i in 1:(200-1)){
+    for (j in 1:127){
+        layer4[j,i]<- mean(layer4_times_4[j,((i-1)*1300):(i*1300)])
+    }
+}
+i<-200
+for (j in 1:127){
+    layer4[j,i]<- mean(layer4_times_4[j,((i-1)*1300):dim(layer4_times_4)[2]])
+}
+
+
+pdf(file='heatmap3.pdf')
+heatmap(layer4)
+dev.off()
+
+# interesting...
