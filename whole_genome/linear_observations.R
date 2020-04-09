@@ -127,3 +127,30 @@ heatmap(layer4)
 dev.off()
 
 # interesting...
+
+layer5abriv <- array(0,200)
+for (i in 1:(200-1)){
+    layer5abriv[i]<- mean(sort(snp.svd$v[,5])[((i-1)*1300):(i*1300)])
+}
+i<-200
+layer5abriv[i]<- mean(sort(snp.svd$v[,5])[((i-1)*1300):dim(snp.svd$v)[1]])
+
+layer5_times_5 <- sort(snp.svd$u[,4]) %*% t(sort(layer5abriv))
+
+pdf(file='heatmap4.pdf')
+heatmap(layer5_times_5)
+dev.off()
+
+a<-rnorm(n=200,sd=100)
+b<-rnorm(n=200,sd=1)
+pdf(file='heatmap_normal.pdf')
+heatmap(a%*%t(b))
+dev.off()
+
+layer6ends <- array(0,200)
+layer6ends[1:100]<-sort(snp.svd$v[,6])[1:100]
+layer6ends[101:200]<-sort(snp.svd$v[,6])[(dim(snp.svd$v)[1]-99):dim(snp.svd$v)[1]]
+layer6_times_6 <- sort(snp.svd$u[,6]) %*% t(sort(layer6ends))
+pdf(file='heatmap5.pdf')
+heatmap(layer6_times_6)
+dev.off()
