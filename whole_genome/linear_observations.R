@@ -171,3 +171,26 @@ for (i in seq(num_layers)) {
     norm2s[i]<-svd(principle.loadings(snp.svd$u[,i]) %*% t(principle.loadings(snp.svd$v[,i])))$d[1]
     print(norm2s[i])
 }
+
+noise.norm2s<-array()
+for (i in seq(num_layers)) {
+    noise.norm2s[i]<-svd(non.principle.loadings(snp.svd$u[,i]) %*% t(non.principle.loadings(snp.svd$v[,i])))$d[1]
+    print(noise.norm2s[i])
+}
+
+# compare with norm2s:
+norm2s.eval<-array()
+for (i in seq(num_layers)) {
+    norm2s.eval[i] <- sqrt(sum((snp.svd$u[,i])^2)*max((snp.svd$v[,i])^2))
+    print(norm2s.eval)
+}
+
+# validify the result on the 2-norm of a rank-1 matrix
+a<-c(1,2,3,4,5)
+b<-c(2,24,43,1)
+a%*%t(b)
+norm(a%*%t(b),type='2')
+svd(a%*%t(b))$d[1]
+
+sqrt(sum(a^2)*sum(b^2))
+
