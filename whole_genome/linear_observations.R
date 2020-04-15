@@ -181,7 +181,7 @@ for (i in seq(num_layers)) {
 # compare with norm2s:
 norm2s.eval<-array()
 for (i in seq(num_layers)) {
-    norm2s.eval[i] <- sqrt(sum((snp.svd$u[,i])^2)*max((snp.svd$v[,i])^2))
+    norm2s.eval[i] <- sqrt(sum((snp.svd$u[,i])^2)*sum((snp.svd$v[,i])^2))
     print(norm2s.eval)
 }
 
@@ -193,4 +193,15 @@ norm(a%*%t(b),type='2')
 svd(a%*%t(b))$d[1]
 
 sqrt(sum(a^2)*sum(b^2))
+
+# the operator norm of rank 1 matrix = the product of the norms of the two vectors
+
+noise.norm2s.eval<-array()
+for (i in seq(num_layers)) {
+    noise.norm2s.eval[i] <- sqrt(sum(non.principle.loadings(snp.svd$u[,i])^2)*sum(non.principle.loadings(snp.svd$v[,i])^2))
+    print(noise.norm2s.eval)
+}
+
+#  [1] 0.81946857 0.04639882 0.07888633 0.10814524 0.07286147 0.07845373
+#  [7] 0.02964882 0.02618803 0.08435135 0.01949680
 
