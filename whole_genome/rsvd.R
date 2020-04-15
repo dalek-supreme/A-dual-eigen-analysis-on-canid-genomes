@@ -1,0 +1,31 @@
+library(gdsfmt)
+library(SNPRelate)
+
+# for the 127-sample dataset first 
+genome <- snpgdsOpen("127_biallelic.gds")
+sample.id <- read.gdsn(index.gdsn(genome, "sample.id"))
+
+snp.list.all <- snpgdsSNPList(genome)
+
+snp.id.no_missing <- snpgdsSelectSNP(genome,missing.rate=0)
+
+load("snpset.Rdata")
+#source("LD_pruning.R")
+snp.id.pruned <- unlist(unname(snpset))
+snp.id.pruned.no_missing <- intersect(snp.id.pruned,snp.id.no_missing)
+
+snp.genotype <- snpgdsGetGeno(genome,snp.id=snp.id.pruned.no_missing)
+snp.list <- snp.list.all[snp.list.all$snp.id %in% snp.id.pruned.no_missing,]
+
+snp.svd <- svd(snp.genotype)
+save(snp.svd,file='snp.svd.Rdata')
+
+
+# randomized svd
+library(rsvd)
+
+snp.rsvd <- robustSvd(snp.genotype)
+save(snp.rsvd,file='snp.rsvd.Rdata')
+
+# robust svd
+library()

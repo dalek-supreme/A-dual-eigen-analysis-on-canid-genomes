@@ -31,7 +31,7 @@ BiocManager::install("SNPRelate")
 BiocManager::install("biomaRt")
 BiocManager::install("gdsfmt")
 
-#BiocManager::install("pcaMethods")
+BiocManager::install("pcaMethods")
 #install.packages("matrixStats")
 
 install.packages("RobRSVD")
