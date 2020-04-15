@@ -158,3 +158,16 @@ dev.off()
 
 layer1.svd<-svd(snp.svd$u[,1] %*% t(snp.svd$v[,1]))
 
+layer1.sort.svd<-svd(sort(snp.svd$u[,1]) %*% t(sort(snp.svd$v[,1])))
+
+layer1.main.svd<-svd(principle.loadings(snp.svd$u[,1]) %*% t(principle.loadings(snp.svd$v[,1])))
+
+layer2.main.svd<-svd(principle.loadings(snp.svd$u[,2]) %*% t(principle.loadings(snp.svd$v[,2])))
+
+layer3.main.svd<-svd(principle.loadings(snp.svd$u[,2]) %*% t(principle.loadings(snp.svd$v[,2])))
+
+norm2s<-array()
+for (i in seq(num_layers)) {
+    norm2s[i]<-svd(principle.loadings(snp.svd$u[,i]) %*% t(principle.loadings(snp.svd$v[,i])))$d[1]
+    print(norm2s[i])
+}
