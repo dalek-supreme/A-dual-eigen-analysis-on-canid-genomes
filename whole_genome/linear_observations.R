@@ -154,3 +154,7 @@ layer6_times_6 <- sort(snp.svd$u[,6]) %*% t(sort(layer6ends))
 pdf(file='heatmap5.pdf')
 heatmap(layer6_times_6)
 dev.off()
+
+
+layer1.svd<-svd(snp.svd$u[,1] %*% t(snp.svd$v[,1]))
+
