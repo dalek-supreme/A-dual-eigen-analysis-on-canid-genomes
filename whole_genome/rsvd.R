@@ -24,8 +24,16 @@ save(snp.svd,file='snp.svd.Rdata')
 # randomized svd
 library(rsvd)
 
-snp.rsvd <- robustSvd(snp.genotype)
+snp.rsvd <- rsvd(snp.genotype)
 save(snp.rsvd,file='snp.rsvd.Rdata')
 
 # robust svd
-library()
+library(pcaMethods)
+snp.robsvd <- robustSvd(snp.genotype)
+save(snp.robsvd,file='snp.robsvd.Rdata')
+# memory exceeded!!!
+
+library(RobRSVD)
+snp.RobRSVD1 <- RobRSVD(snp.genotype[1:10000],irobust=TRUE, istablize=F)
+save(snp.RobRSVD,file='snp.RobRSVD.Rdata')
+# doesnt'work!!!
