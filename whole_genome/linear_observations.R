@@ -208,3 +208,136 @@ for (i in seq(num_layers)) {
 #  [1] 0.81946857 0.04639882 0.07888633 0.10814524 0.07286147 0.07845373
 #  [7] 0.02964882 0.02618803 0.08435135 0.01949680
 
+
+
+############### pertubation and noise and stability
+pdf('plot_pertub.pdf')
+plot(diff(snp.svd$d)/snp.svd$d[2:length(snp.svd$d)][2:(length(snp.svd$d))])
+dev.off()
+
+diff(snp.svd$d)/snp.svd$d[2:length(snp.svd$d)]->pertub
+
+(snp.svd$d[1:(length(snp.svd$d)-1)]-snp.svd$d[2:length(snp.svd$d)])
+
+# get principle loadings, combine and sum to get approximation matrix, calculate error. (2-norm, Frobenius norm)
+
+a<-array(0,c(10,10))
+a[1,3]<-1
+a[3,5]<-1
+a[4,9]<-1
+a[3,4]<-1
+
+b<-svd(a)
+
+b$d[1]*b$u[,1]%*%t(b$v[,1])+b$d[2]*b$u[,2]%*%t(b$v[,2])+b$d[3]*b$u[,3]%*%t(b$v[,3])
+
+
+# check sparsity
+count.0 <- 0
+count.1 <- 0
+count.2 <- 0
+
+for (i in seq(dim(snp.genotype)[1])){
+    for (j in seq(dim(snp.genotype)[2])){
+        if (snp.genotype[i,j]==0)
+            count.0 <- count.0+1
+        else if (snp.genotype[i,j]==1)
+            count.1 <- count.1+1
+        else if (snp.genotype[i,j]==2)
+            count.2 <- count.2+1
+        else print(snp.genotype[i,j])
+    }
+}
+print(count.0)
+print(count.1)
+print(count.2)
+
+count.0+count.1+count.2
+dim(snp.genotype)[1]*dim(snp.genotype)[2]
+
+trivial.cols <- 0
+for (j in seq(dim(snp.genotype)[2])){
+    if (  (!(1 %in% snp.genotype[,j]) & !(0 %in% snp.genotype[,j]))
+        | (!(2 %in% snp.genotype[,j]) & !(0 %in% snp.genotype[,j]))
+        | (!(1 %in% snp.genotype[,j]) & !(2 %in% snp.genotype[,j]))
+        ) {
+        trivial.cols <- trivial.cols +1
+        print(trivial.cols)
+    }
+}
+
+trivial.rows <- 0
+for (i in seq(dim(snp.genotype)[1])){
+    if (  (!(1 %in% snp.genotype[i,]) & !(0 %in% snp.genotype[i,]))
+        | (!(2 %in% snp.genotype[i,]) & !(0 %in% snp.genotype[i,]))
+        | (!(1 %in% snp.genotype[i,]) & !(2 %in% snp.genotype[i,]))
+        ) {
+        trivial.rows <- trivial.rows +1
+        print(trivial.rows)
+    }
+}
+# no trivial columns or rows
+# indicates very well distributed sparsity
+# full rank can be a problem...
+
+# is full rank since it has 127 singular values.\
+
+# change coding to 2,1,0
+
+snp.genotype.recoding <- snp.genotype
+
+for (i in seq(dim(snp.genotype.recoding)[1])){
+    for (j in seq(dim(snp.genotype.recoding)[2])){
+        if (snp.genotype.recoding[i,j]==0)
+            snp.genotype.recoding[i,j]<-2
+        else if (snp.genotype.recoding[i,j]==2)
+            snp.genotype.recoding[i,j]<-0
+    }
+}
+
+
+# check sparsity
+count.0 <- 0
+count.1 <- 0
+count.2 <- 0
+
+for (i in seq(dim(snp.genotype.recoding)[1])){
+    for (j in seq(dim(snp.genotype.recoding)[2])){
+        if (snp.genotype.recoding[i,j]==0)
+            count.0 <- count.0+1
+        else if (snp.genotype.recoding[i,j]==1)
+            count.1 <- count.1+1
+        else if (snp.genotype.recoding[i,j]==2)
+            count.2 <- count.2+1
+        else print(snp.genotype.recoding[i,j])
+    }
+}
+print(count.0)
+print(count.1)
+print(count.2)
+
+
+load('snp.recoding.svd.Rdata')
+svd.comp <- array(0,c(2,127))
+svd.comp[1,] <- snp.svd$d
+svd.comp[2,] <- snp.recoding.svd$d
+
+sqrt(sum((snp.svd$u[,1]-snp.recoding.svd$u[,1])^2))
+sqrt(sum((snp.svd$v[,1]-snp.recoding.svd$v[,1])^2))
+sqrt(sum((snp.svd$v[,1])^2))
+sqrt(sum((snp.recoding.svd$v[,1])^2))
+
+sum(snp.svd$v[,1]*snp.recoding.svd$v[,1])
+acos(sum(snp.svd$v[,1]*snp.recoding.svd$v[,1]))
+
+acos(sum(snp.svd$v[,1]*snp.recoding.svd$v[,1]))/pi*180
+acos(sum(snp.svd$v[,2]*snp.recoding.svd$v[,2]))/pi*180
+acos(sum(snp.svd$v[,3]*snp.recoding.svd$v[,3]))/pi*180
+
+for (i in seq(10)) {
+    print(acos(sum(snp.svd$v[,i]*snp.recoding.svd$v[,i]))/pi*180)
+}
+for (i in seq(10)) {
+    print(acos(sum(snp.svd$u[,i]*snp.recoding.svd$u[,i]))/pi*180)
+}
+

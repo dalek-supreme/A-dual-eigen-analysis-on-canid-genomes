@@ -17,6 +17,8 @@ snp.id.pruned.no_missing <- intersect(snp.id.pruned,snp.id.no_missing)
 snp.genotype <- snpgdsGetGeno(genome,snp.id=snp.id.pruned.no_missing)
 snp.list <- snp.list.all[snp.list.all$snp.id %in% snp.id.pruned.no_missing,]
 
+save(snp.genotype,file='snp.genotype.Rdata')
+
 snp.svd <- svd(snp.genotype)
 save(snp.svd,file='snp.svd.Rdata')
 
