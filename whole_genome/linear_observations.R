@@ -766,3 +766,22 @@ for (layer in seq(num_layers)){
     print(paste(layer,'v'))
     print(v[nonzero.pos(v)])
 }
+
+mutation.count <- array(0,dim(snp.genotype)[1])
+for (i in seq(dim(snp.genotype)[1])){
+    mutation.count[i] <- sum(snp.genotype[i,])
+}
+
+mutation.count <- array(0,c(3,dim(snp.genotype)[1]))
+rownames(mutation.count) <- c(0,1,2)
+for (i in seq(dim(snp.genotype)[1])){
+    for (j in seq(dim(snp.genotype)[2])) {
+        if (snp.genotype[i,j]==0)
+            mutation.count[1,] <- mutation.count[1,i]+1
+        else if (snp.genotype[i,j]==1)
+            mutation.count[2,i] <- mutation.count[2,i]+1
+        else if (snp.genotype[i,j]==2)
+            mutation.count[3,i] <- mutation.count[3,i]+1
+        else print(snp.genotype[i,j])
+    }
+}
