@@ -785,3 +785,17 @@ for (i in seq(dim(snp.genotype)[1])){
         else print(snp.genotype[i,j])
     }
 }
+
+# see if the 'main positions' intersect
+u.cutoff <- 0.8 -> v.cutoff
+num_layers <- 10
+main.pos.x <- list()
+main.pos.y <- list()
+for (layer in seq(num_layers)) {
+    u <- filter.loadings(snp.svd$u[,layer],method='2',norm.cutoff=u.cutoff)
+    v <- filter.loadings(snp.svd$v[,layer],method='2',norm.cutoff=v.cutoff)
+    main.pos.x[[layer]] <- nonzero.pos(u)
+    main.pos.y[[layer]] <- nonzero.pos(v)
+}
+
+plot()
