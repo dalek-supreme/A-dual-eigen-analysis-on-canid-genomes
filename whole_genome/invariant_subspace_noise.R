@@ -31,4 +31,5 @@ withnoise.genotype.uniform <- snp.genotype + noise.uniform
 # svd
 withnoise.svd.uniform <- svd(withnoise.genotype.uniform)
 
+norm(noise.uniform,type='2')
 # gaussian noise: seems unfeasible...
