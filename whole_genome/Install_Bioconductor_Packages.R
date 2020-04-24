@@ -46,3 +46,5 @@ install.packages("sp")
 install.packages("maptools")
 install.packages("maps")
 install.packages("wesanderson")
+
+ install.packages('pheatmap')

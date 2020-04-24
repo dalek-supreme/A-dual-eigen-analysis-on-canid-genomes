@@ -98,3 +98,10 @@ nonzero.pos <- function(vec) {
 random.pos <- function(total.length,size){
     return(sample(seq(total.length),size=size,replace=F))
 }
+
+
+unit.vec.angle <- function(v1,v2,unit=c('rad','deg')){
+    if (unit == 'rad') return(acos(sum(v1*v2)))
+    if (unit == 'deg') return(acos(sum(v1*v2))/pi*180)
+    else stop('Wrong argument for unit: use \'rad\' or \'deg\'\n')
+}

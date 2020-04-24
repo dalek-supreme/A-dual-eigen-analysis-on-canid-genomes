@@ -799,3 +799,29 @@ for (layer in seq(num_layers)) {
 }
 
 plot()
+
+for (layer in seq(num_layers)){
+    print(paste(layer,length(main.pos.x[[layer]]),length(main.pos.y[[layer]]),snp.svd$d[layer]))
+}
+
+for (layer in seq(num_layers)){
+    print(snp.svd$d[layer])
+}
+
+length(intersect(main.pos.x[[2]],union(main.pos.x[[3]],main.pos.x[[4]])))/length(main.pos.x[[2]])
+length(intersect(main.pos.x[[3]],union(main.pos.x[[2]],main.pos.x[[4]])))/length(main.pos.x[[3]])
+length(intersect(main.pos.x[[4]],union(main.pos.x[[3]],main.pos.x[[2]])))/length(main.pos.x[[4]])
+
+length(intersect(main.pos.y[[2]],union(main.pos.y[[3]],main.pos.y[[4]])))/length(main.pos.y[[2]])
+length(intersect(main.pos.y[[3]],union(main.pos.y[[2]],main.pos.y[[4]])))/length(main.pos.y[[3]])
+length(intersect(main.pos.y[[4]],union(main.pos.y[[3]],main.pos.y[[2]])))/length(main.pos.y[[4]])
+
+length(intersect(main.pos.x[[2]],main.pos.x[[4]]))/length(main.pos.x[[2]])
+length(intersect(main.pos.y[[2]],main.pos.y[[4]]))/length(main.pos.y[[2]])
+
+layer <- 6
+u <- filter.loadings(snp.svd$u[,layer],method='2',norm.cutoff=u.cutoff)
+v <- filter.loadings(snp.svd$v[,layer],method='2',norm.cutoff=v.cutoff)
+main.pos.x <- nonzero.pos(u)
+main.pos.y <- nonzero.pos(v)
+derivtest6 <- u[main.pos.x] %*% t(v[main.pos.y])
