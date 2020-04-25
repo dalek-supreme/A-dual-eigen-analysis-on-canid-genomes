@@ -54,7 +54,7 @@ library(maps)
 mapworld<-borders("world",colour = "gray50",fill="white")
 mp<-ggplot()+mapworld+ylim(-60,90)
 mp<-mp+geom_point(aes(x=as.numeric(cluster.map$Longitude),
-                        y=as.numeric(cluster.map$Latitude),color=as.factor(cluster.map$ClusterNumber)))
+                        y=as.numeric(cluster.map$Latitude),color=as.factor(cluster.map$ClusterNumber),size=5,alpha=0.2))
 # mid<-mean(unique(cluster.map$ClusterNumber))
 # mp<-mp+scale_color_gradient2(midpoint=mid, low="blue", mid="white",
 #                      high="red", space ="Lab" )
