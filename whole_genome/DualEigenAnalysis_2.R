@@ -1,7 +1,34 @@
+############################
+library(gdsfmt)
+library(SNPRelate)
+
+# for the 127-sample dataset first 
+genome <- snpgdsOpen("127_biallelic.gds")
+
+snp.list.all <- snpgdsSNPList(genome)
+
+snp.id.no_missing <- snpgdsSelectSNP(genome,missing.rate=0)
+
+load("snpset.Rdata")
+#source("LD_pruning.R")
+snp.id.pruned <- unlist(unname(snpset))
+snp.id.pruned.no_missing <- intersect(snp.id.pruned,snp.id.no_missing)
+
+snp.genotype <- snpgdsGetGeno(genome,snp.id=snp.id.pruned.no_missing)
+snp.list <- snp.list.all[snp.list.all$snp.id %in% snp.id.pruned.no_missing,]
+
+snp.svd <- svd(snp.genotype)
+
+sample.id <- read.gdsn(index.gdsn(genome, "sample.id"))
+
+print('svd finished.')
+
+############################
+
 load('gene.db.Rdata')
 source('utils.R')
 source('DualEigen_utils.R')
-load('snp.svd.Rdata')
+#load('snp.svd.Rdata')
 load('snp.genotype.Rdata')
 
 #sink("WILCOXON_enrichment.log")
@@ -11,14 +38,15 @@ num_layers <- 10
 layers <- 2:10
 num_terms <- 50
 
-system(paste("NUM_LAYERS=",num_layers,sep=""))
-system("bash create_result_dir.sh")
+# system(paste("NUM_LAYERS=",num_layers,sep=""))
+# system("bash create_result_dir.sh")
 
+t0 <- proc.time()
 t1 <- proc.time()
 
-gene.stats <- gene.loading.stats(snp.svd$v,gene.db)
-########## stuck here ##########
-save(gene.stats,file='gene.stats.Rdata')
+# gene.stats <- gene.loading.stats(snp.svd$v,gene.db)
+# ########## stuck here ##########
+# save(gene.stats,file='gene.stats2.Rdata')
 
 ## Get main positions:
 u.cutoff <- 0.8 -> v.cutoff
@@ -31,23 +59,25 @@ for (layer in seq(num_layers)) {
     main.pos.y[[layer]] <- nonzero.pos(v)
 }
 
+print('main positions found.')
 
 # load("gene.db.Rdata")
-# load("gene.stats.Rdata")
+
 t5<-proc.time()
 for (layer in layers)
 {
     t3 <- proc.time()
-    gene.stats.layer <- gene.loadings.stats.get_layer(gene.stats,layer)
-    gene.stats.sorted <-  gene.stats.sort(gene.stats.layer)
+    gene.stats <- gene.loading.stats.1_layer_only(snp.svd$v[main.pos.y[[layer]],layer],gene.db)
+    
+    #gene.stats.layer <- gene.loadings.stats.get_layer(gene.stats)
+    #gene.stats.sorted <-  gene.stats.sort(gene.stats.layer)
     # gene.stats.positive <- gene.subset.pole_split(gene.stats.sorted,pole="positive")
     # gene.stats.negative <- gene.subset.pole_split(gene.stats.sorted,pole="negative")
-    gene.stats.main <- gene.subset.select(gene.stats.sorted, main.pos.y[[layer]])
-    result.main <- enrichment.wilcoxon(gene.stats.main,gene.db) # about 7 minutes
-    setwd(paste("~/enrichment2/",layer,sep=""))
-    save(result.main,,file="result.Rdata")
-    setwd(paste("~/enrichment2/",layer,sep=""))
-    enrichment.output(result.main, gene.db, num_terms, filename="wilcox", p_cutoff=0.05)
+    #gene.stats.main <- gene.subset.select(gene.stats.layer, main.pos.y[[layer]])
+    result.main <- enrichment.wilcoxon(gene.stats,gene.db) # about 7 minutes
+    setwd("~/enrichment2/")
+    save(result.main,file=paste('result-',layer,'.Rdata',sep=''))
+    enrichment.output(result.main, gene.db, num_terms, filename=paste('wilcox-',layer,sep=''), p_cutoff=0.05)
     t4 <- proc.time()-t3
     print(paste("Layer ",layer," finished. Time elapsed: ",t4[3],sep=""))
     t6<-proc.time()-t5

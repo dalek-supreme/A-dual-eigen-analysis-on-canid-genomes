@@ -286,3 +286,60 @@ enrichment.output <- function(enrichment.result, gene.data, num_terms=20, filena
         enrichment.output.two.sided(enrichment.result, gene.data, num_terms, filename, p_cutoff)
 }
 
+
+gene.loading.stats.1_layer_only <- function(snp.svd.v.layer,gene.data) {
+    gene.isunique <- (!duplicated(gene.data$ensembl_gene_id)
+                  & gene.data$go_id!="") # remove genes w/o GO annotation
+    gene.unique.index <- seq_along(gene.data$ensembl_gene_id)[gene.isunique]
+    gene.unique <- data.frame(
+                    ensembl_gene_id = gene.data$ensembl_gene_id[gene.unique.index],
+                    chromosome_name=gene.data$chromosome_name[gene.unique.index],
+                    start_position = gene.data$start_position[gene.unique.index],
+                    end_position = gene.data$end_position[gene.unique.index],
+                    stringsAsFactors = F
+                )
+    result <- data.frame(
+        ensembl_gene_id=gene.unique$ensembl_gene_id, # "ensembl_gene_id"
+        loading.count=array(0,length(gene.unique$ensembl_gene_id)), # "loading.count"
+        loading.sum=array(0,length(gene.unique$ensembl_gene_id)), # "loading.sum"
+        loading.avg=array(0,length(gene.unique$ensembl_gene_id)), # "loading.avg"
+        stringsAsFactors = F
+    )
+    total.genes <- length(gene.unique$ensembl_gene_id)
+    total.sites <- length(snp.svd.v.layer)
+
+    for (gene.index in seq_along(gene.unique$ensembl_gene_id)) {
+        gene.loading.count <- 0
+        gene.loading.sum <- 0
+        gene.loading.avg <- 0
+        for (site.index in seq(length(snp.svd.v.layer))) {
+            if (snp.list$chromosome[site.index] == gene.unique$chromosome_name[gene.index]){
+                if (gene.unique$start_position[gene.index] <= snp.list$position[site.index]
+                && gene.unique$end_position[gene.index] >= snp.list$position[site.index]
+                ) {
+                    gene.loading.count <- gene.loading.count+1
+                    gene.loading.sum <- gene.loading.sum + snp.svd.v.layer[site.index]
+                    
+                    #print(paste("gene:",gene.index,"/",total.genes,"=",gene.index/total.genes,sep=""))
+                    #print(paste("site:",site.index,"/",total.sites,"=",site.index/total.sites,sep=""))
+                    # t2<-proc.time()-t1
+                    # print(t2[3])
+                    # print(paste("Estimated time remaining: ",t2[3]*total.genes/gene.index-t2[3]," seconds",sep=""))
+                }
+            }
+        }
+        if (gene.loading.count != 0) {
+            gene.loading.avg <- gene.loading.sum/gene.loading.count
+        }
+        result$loading.count[gene.index] <- gene.loading.count
+        result$loading.sum[gene.index] <- gene.loading.sum
+        result$loading.avg[gene.index] <- gene.loading.avg
+
+        # print(paste("gene:",gene.index,"/",total.genes,"=",gene.index/total.genes,sep=""))
+        # t2<-proc.time()-t1
+        # print(t2[3])
+        # print(paste("Estimated time remaining: ",t2[3]*total.genes/gene.index-t2[3]," seconds",sep=""))
+    }
+    result <- result[result$loading.count!=0,]
+    return(result)
+}
