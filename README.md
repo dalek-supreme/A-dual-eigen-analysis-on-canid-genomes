@@ -1,5 +1,5 @@
 # A dual eigen-analysis on canid genomes
- Undergraduate Thesis advised by **Prof. Lei M. Li.** (Ongoing)  
+ Undergraduate Thesis advised by **Prof. Lei M. Li.**   
  *Install_Bioconductor_Packages.R*: Install the tools.  
  *svd.R*: SVD on whole genomes. Currently using one chromosome.  
  *database.R*: obtain gene and annotation data for enrichment analysis.  
