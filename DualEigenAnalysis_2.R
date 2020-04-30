@@ -26,10 +26,10 @@ print('svd finished.')
 ############################
 
 load('gene.db.Rdata')
-source('utils.R')
+source('utils-2.R')
 source('DualEigen_utils.R')
 #load('snp.svd.Rdata')
-load('snp.genotype.Rdata')
+#load('snp.genotype.Rdata')
 
 #sink("WILCOXON_enrichment.log")
 
@@ -49,7 +49,7 @@ t1 <- proc.time()
 # save(gene.stats,file='gene.stats2.Rdata')
 
 ## Get main positions:
-u.cutoff <- 0.9 -> v.cutoff
+u.cutoff <- 0.8 -> v.cutoff
 main.pos.x <- list()
 main.pos.y <- list()
 for (layer in seq(num_layers)) {

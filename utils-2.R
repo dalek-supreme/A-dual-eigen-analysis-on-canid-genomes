@@ -102,6 +102,7 @@ gene.subset.pole_split <- function(gene.stats.layer,pole){
 # enrichment analysis and file output
 
 enrichment.wilcoxon <- function(gene.subset,gene.data, pathway.namespace){
+    gene.subset <- gene.subset[gene.subset$ensembl_gene_id %in% unique(gene.data[gene.data$namespace_1003==pathway.namespace,]$ensembl_gene_id,]
     pathway.ids <- unique(gene.data[gene.data$namespace_1003==pathway.namespace,]$go_id)
     result.length <- length(pathway.ids)
     enrichment.result <- data.frame(

@@ -108,6 +108,7 @@ gene.subset.pole_split <- function(gene.stats.layer,pole){
 # enrichment analysis and file output
 
 enrichment.wilcoxon <- function(gene.subset,KEGG.data){
+    gene.subset <- gene.subset[gene.subset$ensembl_gene_id%in%unique(KEGG.data$KEGGPATHID2EXTID$to),]
     pathway.ids <- unique(KEGG.data$KEGGPATHID2EXTID$from)
     result.length <- length(pathway.ids)
     enrichment.result <- data.frame(
