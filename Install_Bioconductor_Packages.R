@@ -30,3 +30,32 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install("SNPRelate")
 BiocManager::install("biomaRt")
 BiocManager::install("gdsfmt")
+
+BiocManager::install("pcaMethods")
+#install.packages("matrixStats")
+
+install.packages("RobRSVD")
+install.packages("rsvd")
+install.packages("ape")
+install.packages("tidytree")
+install.packages("phytools")
+
+install.packages("ggplot2")
+install.packages("ggmap")
+install.packages("sp")
+install.packages("maptools")
+install.packages("maps")
+install.packages("wesanderson")
+
+ install.packages('pheatmap')
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("ggtree")
+
+install.packages('ggnewscale')
+
+install.packages('ggimage')
+
+BiocManager::install("ReactomePA")
