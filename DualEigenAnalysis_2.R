@@ -82,7 +82,7 @@ for (layer in layers)
     result.biological_process <- enrichment.wilcoxon(gene.stats,gene.db,'biological_process') # about 7 minutes
     result.cellular_component <- enrichment.wilcoxon(gene.stats,gene.db,'cellular_component') # about 7 minutes
     
-    setwd("~/enrichment5/")
+    setwd("~/enrichment_GO/")
     save(result.molecular_function,result.biological_process,result.cellular_component,file=paste('result-',layer,'.Rdata',sep=''))
     enrichment.output(result.molecular_function, gene.db, num_terms, filename=paste('wilcox-molecular_function',layer,sep=''), p_cutoff=0.05)
     enrichment.output(result.biological_process, gene.db, num_terms, filename=paste('wilcox-biological_process',layer,sep=''), p_cutoff=0.05)
