@@ -25,8 +25,9 @@ print('svd finished.')
 
 ############################
 
-load('gene.db.Rdata')
-source('utils.R')
+#load('gene.db.Rdata')
+load('KEGG.db.Rdata')
+source('utils-2_KEGG.R')
 source('DualEigen_utils.R')
 #load('snp.svd.Rdata')
 load('snp.genotype.Rdata')
@@ -64,30 +65,33 @@ for (layer in seq(num_layers)) {
 }
 
 print('main positions found.')
-
-# load("gene.db.Rdata")
+load('KEGG.db.Rdata')
+load("gene.db.Rdata")
+gene.2.db <- gene.db[!is.na(gene.db$entrezgene_id),]
+gene.id.unique <- unique(KEGG.db$KEGGPATHID2EXTID$to)
+gene.2.db <- gene.2.db[gene.2.db$entrezgene_id %in% gene.id.unique,]
+gene.2.db <- gene.2.db[!duplicated(gene.2.db$entrezgene_id),]
+db_names <- names(gene.2.db)
+db_names[db_names=='ensembl_gene_id']<-'null'
+db_names[db_names=='entrezgene_id']<-'ensembl_gene_id'
+names(gene.2.db) <- db_names
 
 t5<-proc.time()
 for (layer in layers)
 {
     t3 <- proc.time()
-    gene.stats <- gene.loading.stats.1_layer_only(snp.svd$v[main.pos.y[[layer]],layer],gene.db)
+    gene.stats <- gene.loading.stats.1_layer_only(snp.svd$v[main.pos.y[[layer]],layer],gene.data=gene.2.db,KEGG.data=KEGG.db)
     
     #gene.stats.layer <- gene.loadings.stats.get_layer(gene.stats)
     #gene.stats.sorted <-  gene.stats.sort(gene.stats.layer)
     # gene.stats.positive <- gene.subset.pole_split(gene.stats.sorted,pole="positive")
     # gene.stats.negative <- gene.subset.pole_split(gene.stats.sorted,pole="negative")
     #gene.stats.main <- gene.subset.select(gene.stats.layer, main.pos.y[[layer]])
-    result.molecular_function <- enrichment.wilcoxon(gene.stats,gene.db,'molecular_function') # about 7 minutes
-    result.biological_process <- enrichment.wilcoxon(gene.stats,gene.db,'biological_process') # about 7 minutes
-    result.cellular_component <- enrichment.wilcoxon(gene.stats,gene.db,'cellular_component') # about 7 minutes
-    
-    setwd("~/enrichment5/")
-    save(result.molecular_function,result.biological_process,result.cellular_component,file=paste('result-',layer,'.Rdata',sep=''))
-    enrichment.output(result.molecular_function, gene.db, num_terms, filename=paste('wilcox-molecular_function',layer,sep=''), p_cutoff=0.05)
-    enrichment.output(result.biological_process, gene.db, num_terms, filename=paste('wilcox-biological_process',layer,sep=''), p_cutoff=0.05)
-    enrichment.output(result.cellular_component, gene.db, num_terms, filename=paste('wilcox-cellular_component',layer,sep=''), p_cutoff=0.05)
-    
+    result.KEGG <- enrichment.wilcoxon(gene.stats,KEGG.db) # about 7 minutes
+
+    setwd("~/enrichment_KEGG/")
+    save(result.KEGG,file=paste('result-KEGG-',layer,'.Rdata',sep=''))
+    enrichment.output(result.KEGG, KEGG.db, num_terms, filename=paste('wilcox-molecular_function',layer,sep=''), p_cutoff=0.05)
 
 
     t4 <- proc.time()-t3

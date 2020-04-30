@@ -48,3 +48,14 @@ install.packages("maps")
 install.packages("wesanderson")
 
  install.packages('pheatmap')
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("ggtree")
+
+install.packages('ggnewscale')
+
+install.packages('ggimage')
+
+BiocManager::install("ReactomePA")

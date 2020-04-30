@@ -67,3 +67,50 @@ mp<-mp+geom_point(aes(x=as.numeric(cluster.map$Longitude),
 library(wesanderson)
 
 mp<-mp+scale_color_manual(values=wes_palette(name="Cavalcanti1"))
+
+
+library(treeio)
+library(ggtree)
+snp.tree <- read.tree("snphylo.output.ml.tree")
+snp.tree.plot <- ggtree(snp.tree, layout="circular") + geom_tiplab(aes(angle=angle), color='purple',hjust = -.2,size=1.5)+ xlim(0, 0.55) 
+
+setwd('~')
+load('snp.svd.Rdata')
+source('DualEigen_utils.R')
+num_layers <- 10
+u.cutoff <- 0.8 -> v.cutoff
+main.pos.x <- list()
+main.pos.y <- list()
+for (layer in seq(num_layers)) {
+    u <- filter.loadings(snp.svd$u[,layer],method='2',norm.cutoff=u.cutoff)
+    v <- filter.loadings(snp.svd$v[,layer],method='2',norm.cutoff=v.cutoff)
+    main.pos.x[[layer]] <- nonzero.pos(u)
+    main.pos.y[[layer]] <- nonzero.pos(v)
+}
+
+# svd.cluster <- array('black',c(127,10))
+# for (layer in 1:10){
+#     for (j in seq_along(main.pos.x[[layer]])){
+#         svd.cluster[main.pos.x[[layer]][j],layer] <- 'red'
+#     }
+# }
+setwd('tree-dualeigen')
+for (layer in 2:10){
+svd.cluster2 <- data.frame(
+    SampleID = demographic.data$SampleID,
+    color = array('grey',length(demographic.data$SampleID))
+)
+
+for (j in seq_along(main.pos.x[[layer]])){
+        svd.cluster2[main.pos.x[[layer]][j],]$color <- 'red'
+}
+
+snp.tree$tip.label[snp.tree$tip.label=='Lcu2_Pasto']<- 'Lcu2_Pastora'
+svd.color2 <- array()
+for (i in seq_along(svd.cluster2$color)){
+    svd.color2[i] <- svd.cluster2[svd.cluster2$SampleID==snp.tree$tip.label[i],]$color
+}
+pdf(paste('tree-dualeigen-',layer,'.pdf',sep=''))
+plot(snp.tree, tip.color=svd.color2, type="fan",cex=0.5,x.lim=0.2)
+dev.off()
+}

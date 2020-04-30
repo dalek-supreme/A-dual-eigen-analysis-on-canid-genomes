@@ -40,6 +40,8 @@ library(maps)
 setwd("~/enrichment2/demographic/")
 for (layer in seq(num_layers)) {
     demographic.output <- demographic.data[main.pos.x[[layer]],]
+    demographic.output$Loading <- snp.svd$u[main.pos.x[[layer]],layer]
+    demographic.output <- demographic.output[order((demographic.output$Loading)^2,decreasing=T),]
     write.csv(demographic.output,file=(paste('demographic-',layer,'.csv',sep='')))
 }
 

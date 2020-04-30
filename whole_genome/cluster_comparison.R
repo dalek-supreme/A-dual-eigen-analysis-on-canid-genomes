@@ -3,6 +3,7 @@ demographic.data <- read.csv('demographic.csv')
 # cluster_from_tree[cluster_from_tree$ClusterNumber==5,]$SequenceName
 
 ## Get main positions:
+num_layers <- 10
 u.cutoff <- 0.8 -> v.cutoff
 main.pos.x <- list()
 main.pos.y <- list()
@@ -43,12 +44,41 @@ for (l1 in 2:10){
     }
 }
 
+union_number <- array(-1,c(length(cluster_tree),length(cluster_dualeigen2)))
 identical_rate <- array(-1,c(length(cluster_tree),length(cluster_dualeigen2)))
 for (i in seq_along(cluster_tree)){
-    for (j in seq_along(cluster_dualeigen2))
+    for (j in seq_along(cluster_dualeigen2)) {
         identical_rate[i,j] <- length(intersect(cluster_tree[[i]],cluster_dualeigen2[[j]]))/length(union(cluster_tree[[i]],cluster_dualeigen2[[j]]))
+        union_number[i,j] <- length(union(cluster_tree[[i]],cluster_dualeigen2[[j]]))
+    }
 }
 max(identical_rate)
+
+
+union_number <- array(-1,c(length(cluster_tree),length(cluster_dualeigen2)))
+identical_rate <- array(-1,c(length(cluster_tree),length(cluster_dualeigen2)))
+for (i in seq_along(cluster_tree)){
+    for (j in seq_along(cluster_dualeigen2)) {
+        identical_rate[i,j] <- length(intersect(cluster_tree[[i]],cluster_dualeigen2[[j]]))/length(union(cluster_tree[[i]],cluster_dualeigen2[[j]]))
+        union_number[i,j] <- length(union(cluster_tree[[i]],cluster_dualeigen2[[j]]))
+    }
+}
+max(identical_rate)
+
+identical_rate <- array(-1,c(length(cluster_dualeigen2),length(cluster_geom)))
+for (i in seq_along(cluster_dualeigen2)){
+    for (j in seq_along(cluster_geom))
+        identical_rate[i,j] <- length(intersect(cluster_dualeigen2[[i]],cluster_geom[[j]]))/length(union(cluster_dualeigen2[[i]],cluster_geom[[j]]))
+}
+max(identical_rate)
+
+identical_rate <- array(-1,c(length(cluster_breed2),length(cluster_dualeigen2)))
+for (i in seq_along(cluster_breed2)){
+    for (j in seq_along(cluster_dualeigen2))
+        identical_rate[i,j] <- length(intersect(cluster_breed2[[i]],cluster_dualeigen2[[j]]))/length(union(cluster_breed2[[i]],cluster_dualeigen2[[j]]))
+}
+max(identical_rate)
+
 
 index_matrix <- array(list(),c(length(cluster_tree),length(cluster_dualeigen2)))
 for (i in seq_along(cluster_tree)){
@@ -57,7 +87,7 @@ for (i in seq_along(cluster_tree)){
 }
 
 value_large <- identical_rate[identical_rate>0.7]
-
+num_large <- union_number[identical_rate>0.7]
 index_large <- index_matrix[identical_rate>0.7]
 
 index_layer <- list()
