@@ -59,3 +59,8 @@ install.packages('ggnewscale')
 install.packages('ggimage')
 
 BiocManager::install("ReactomePA")
+
+BiocManager::install("GO.db")
+BiocManager::install("KEGGREST")
+
+BiocManager::install("reactome.db")
