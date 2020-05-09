@@ -24,4 +24,4 @@ rownames(KEGGPATHID2NAME) <- NULL
 kegg.db <- list(KEGGPATHID2EXTID,KEGGPATHID2NAME)
 names(kegg.db) <- c('KEGGPATHID2EXTID','KEGGPATHID2NAME')
 
-save(kegg.db,'kegg.db.Rdata')
+save(kegg.db,file='kegg.db.Rdata')
