@@ -10,14 +10,16 @@ gene2pathway.pathways <- gene2pathway.pathways[names(gene2pathway.ncbi_ids)]
 
 KEGGPATHID2EXTID <- data.frame(
     from=gene2pathway.pathways,
-    to=as.numeric(gsub('ncbi-geneid:','',gene2pathway.ncbi_ids))
+    to=as.numeric(gsub('ncbi-geneid:','',gene2pathway.ncbi_ids)),
+    string.as.factor=F
 )
 rownames(KEGGPATHID2EXTID) <- NULL
 
 pathway.name <- keggList('pathway','cfa')
 KEGGPATHID2NAME <- data.frame(
      from=names(pathway.name),
-     to=pathway.name
+     to=pathway.name,
+     string.as.factor=F
     )
 rownames(KEGGPATHID2NAME) <- NULL
 
