@@ -90,8 +90,8 @@ for (layer in layers)
     #gene.stats.main <- gene.subset.select(gene.stats.layer, main.pos.y[[layer]])
     result.KEGG <- enrichment.wilcoxon(gene.stats,KEGG.db) # about 7 minutes
 
-    setwd("~/enrichment_KEGG_new/")
-    save(result.KEGG,file=paste('result-KEGG-',layer,'.Rdata',sep=''))
+    setwd("~/enrichment_KEGG_new_square/")
+    save(gene.stats,result.KEGG,file=paste('result-KEGG-',layer,'.Rdata',sep=''))
     enrichment.output(result.KEGG, KEGG.db, num_terms, filename=paste('wilcox-molecular_function',layer,sep=''), p_cutoff=0.05)
 
 

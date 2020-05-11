@@ -27,8 +27,8 @@ print('svd finished.')
 
 #load('gene.db.Rdata')
 load('KEGG.db.Rdata')
-source('utils-2_KEGG.R')
-source('DualEigen_utils.R')
+# source('utils-2_KEGG.R')
+# source('DualEigen_utils.R')
 #load('snp.svd.Rdata')
 load('snp.genotype.Rdata')
 
@@ -89,7 +89,7 @@ for (layer in layers)
     #gene.stats.main <- gene.subset.select(gene.stats.layer, main.pos.y[[layer]])
     result.KEGG <- enrichment.wilcoxon(gene.stats,KEGG.db) # about 7 minutes
 
-    setwd("~/enrichment_KEGG/")
+    setwd("~/enrichment_KEGG_square/")
     save(result.KEGG,file=paste('result-KEGG-',layer,'.Rdata',sep=''))
     enrichment.output(result.KEGG, KEGG.db, num_terms, filename=paste('wilcox-molecular_function',layer,sep=''), p_cutoff=0.05)
 

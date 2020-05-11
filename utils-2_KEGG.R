@@ -317,7 +317,7 @@ gene.loading.stats.1_layer_only <- function(snp.svd.v.layer,gene.data,KEGG.data)
                 && gene.unique$end_position[gene.index] >= snp.list$position[site.index]
                 ) {
                     gene.loading.count <- gene.loading.count+1
-                    gene.loading.sum <- gene.loading.sum + snp.svd.v.layer[site.index]
+                    gene.loading.sum <- gene.loading.sum + (snp.svd.v.layer[site.index])^2 # use square. see what happens.
                     
                     #print(paste("gene:",gene.index,"/",total.genes,"=",gene.index/total.genes,sep=""))
                     #print(paste("site:",site.index,"/",total.sites,"=",site.index/total.sites,sep=""))
